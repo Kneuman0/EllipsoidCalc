@@ -20,7 +20,7 @@ public class EllipsoidCalcMain extends Application{
 		Scene scene = new Scene(parent);
 
 		// window title
-		stage.setTitle("Personnel Database");
+		stage.setTitle("Ellipsoid Calculator");
 		stage.setScene(scene);
 		stage.show();
 	}

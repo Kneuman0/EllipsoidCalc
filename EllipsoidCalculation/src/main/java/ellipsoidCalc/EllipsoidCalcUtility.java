@@ -10,7 +10,7 @@ public class EllipsoidCalcUtility {
 				* endRadianTheta * a * b * c)) + (oneThird * (endRadianTheta * a * b * c) * Math.cos(radianMeasureOffZAxisStart))
 						+ (oneThird * (Math.cos(radianMeasureOffZAxisEnd) * startRadianTheta * a * b * c))
 						- (oneThird * startRadianTheta * a * b * c * Math.cos(radianMeasureOffZAxisStart));
-		return volume * -1;
+		return volume;
 	}
 
 	/**

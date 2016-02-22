@@ -33,7 +33,7 @@
             <Label layoutX="4.0" layoutY="87.0" text="φ Start =" />
             <TextField fx:id="thetaStart" layoutX="54.0" layoutY="26.0" onAction="#convertDecimal" prefHeight="25.0" prefWidth="103.0" />
             <TextField fx:id="thetaEnd" layoutX="54.0" layoutY="55.0" onAction="#convertDecimal" prefHeight="25.0" prefWidth="103.0" />
-            <TextField fx:id="phi" layoutX="54.0" layoutY="83.0" onAction="#convertDecimal" prefHeight="25.0" prefWidth="103.0" />
+            <TextField fx:id="phiStart" layoutX="54.0" layoutY="83.0" onAction="#convertDecimal" prefHeight="25.0" prefWidth="103.0" />
             <RadioButton fx:id="radiansRadio" layoutX="94.0" layoutY="147.0" mnemonicParsing="false" selected="true" text="Radians">
                <toggleGroup>
                   <ToggleGroup fx:id="angle" />

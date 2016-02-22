@@ -9,7 +9,7 @@ import javafx.scene.control.ToggleGroup;
 public class EllipsoidCalcController {
 
     @FXML
-    private TextField phi;
+    private TextField phiStart;
     
     @FXML
     private TextField phiEnd;
@@ -63,8 +63,8 @@ public class EllipsoidCalcController {
     public void calculateButton(){
     	String startAngle = thetaStart.getText();
     	String endAngle = thetaEnd.getText();
-    	String zAxisAngleEnd = phi.getText();
-    	String zAxisAngleStart = phiEnd.getText();
+    	String zAxisAngleEnd = phiEnd.getText();
+    	String zAxisAngleStart = phiStart.getText();
     	boolean inDegrees = degreesRadio.isSelected();;
     	double aAxis = 0;
     	double bAxis = 0;

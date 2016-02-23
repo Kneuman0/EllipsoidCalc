@@ -1,4 +1,4 @@
-package ellipsoidCalc;
+package biz.personalAcademics.ellipsoidCalc;
 
 import java.io.IOException;
 

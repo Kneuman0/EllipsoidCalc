@@ -1,4 +1,4 @@
-package ellipsoidCalc;
+package biz.personalAcademics.ellipsoidCalc;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

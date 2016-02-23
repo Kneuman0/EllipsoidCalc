@@ -1,4 +1,4 @@
-package ellipsoidCalc;
+package biz.personalAcademics.ellipsoidCalc;
 
 public class EllipsoidCalcUtility {
 	public double getVolume(double startRadianTheta, double endRadianTheta,

@@ -1,9 +1,11 @@
-package ellipsoidCalc;
+package biz.personalAcademics.ellipsoidCalcTest;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
 import org.junit.Test;
+
+import biz.personalAcademics.ellipsoidCalc.*;
 
 public class EllipsoidCalcUtilityTest {
 
@@ -14,9 +16,20 @@ public class EllipsoidCalcUtilityTest {
 	}
 	
 	@Test
-	public void testConversionToRadians(){
+	public void testConversionToRadiansCalculation(){
 		EllipsoidCalcUtility ellipse = new EllipsoidCalcUtility();
 		assertThat(ellipse.convertThetaToRadians("180", true), is(Math.PI));
+	}
+	
+	@Test
+	public void testConversionToRadiansForInvalidUserInput(){
+		EllipsoidCalcUtility ellipse = new EllipsoidCalcUtility();
+		try {
+			ellipse.convertThetaToRadians("abcd", true);
+			fail("InvalidUserInput was not thrown for 'abcd'");
+		} catch (InvalidUserInputException e) {
+			assertTrue(true);
+		}
 	}
 	
 	@Test

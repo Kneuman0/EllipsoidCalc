@@ -3,11 +3,17 @@ package biz.personalAcademics.ellipsoidCalcTest;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import org.hamcrest.core.StringContains;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import biz.personalAcademics.ellipsoidCalc.*;
 
 public class EllipsoidCalcUtilityTest {
+	
+	@Rule
+	public ExpectedException invalidInput = ExpectedException.none();
 
 	@Test
 	public void testConversionToDecimal() {
@@ -24,12 +30,9 @@ public class EllipsoidCalcUtilityTest {
 	@Test
 	public void testConversionToRadiansForInvalidUserInput(){
 		EllipsoidCalcUtility ellipse = new EllipsoidCalcUtility();
-		try {
-			ellipse.convertThetaToRadians("abcd", true);
-			fail("InvalidUserInput was not thrown for 'abcd'");
-		} catch (InvalidUserInputException e) {
-			assertTrue(true);
-		}
+		invalidInput.expect(InvalidUserInputException.class);
+		invalidInput.expectMessage(StringContains.containsString("abcd"));
+		ellipse.convertThetaToRadians("abcd", true);
 	}
 	
 	@Test

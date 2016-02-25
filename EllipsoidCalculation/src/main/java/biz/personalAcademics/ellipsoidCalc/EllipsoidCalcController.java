@@ -1,4 +1,5 @@
 package biz.personalAcademics.ellipsoidCalc;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -51,7 +52,7 @@ public class EllipsoidCalcController {
     
     
     public void initialize(){
-    	Image image = new Image(EllipsoidCalcMain.class.getResourceAsStream("/pcoordinatesImage.jpg"));
+    	Image image = new Image(this.getClass().getResourceAsStream("pcoordinatesImage.jpg"));
     	diagramImage.setImage(image);
     }
     

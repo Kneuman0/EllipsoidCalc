@@ -2,7 +2,17 @@ package biz.personalAcademics.ellipsoidCalc;
 
 public class EllipsoidCalcUtility {
 	
-	
+	/**
+	 * Finds the volume of the ellipsoid based off the spherical coordinates the user passed in
+	 * @param startRadianTheta
+	 * @param endRadianTheta
+	 * @param radianMeasureOffZAxisEnd
+	 * @param radianMeasureOffZAxisStart
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return
+	 */
 	public static double getVolume(double startRadianTheta, double endRadianTheta,
 			double radianMeasureOffZAxisEnd, double radianMeasureOffZAxisStart,
 			double a, double b, double c) {
@@ -48,6 +58,14 @@ public class EllipsoidCalcUtility {
 
 	}
 
+	/**
+	 * If user inputs angle in degrees, it is converted and returned in radians.
+	 * If radians were chosen, pi is multiplied in 
+	 * @param degrees
+	 * @param degreeIsSelected
+	 * @return
+	 * @throws InvalidUserInputException
+	 */
 	public static double convertThetaToRadians(String degrees, boolean degreeIsSelected)
 			throws InvalidUserInputException {
 		double testDegree;

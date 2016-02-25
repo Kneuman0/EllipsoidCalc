@@ -5,11 +5,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class EllipsoidCalcController {
 
     @FXML
     private TextField phiStart;
+    
+    @FXML
+    private ImageView diagramImage;
     
     @FXML
     private TextField phiEnd;
@@ -46,7 +51,8 @@ public class EllipsoidCalcController {
     
     
     public void initialize(){
-    	// Deliberately left blank
+    	Image image = new Image(getClass().getResourceAsStream("pcoordinatesImage.jpg"));
+    	diagramImage.setImage(image);
     }
     
     public void convertDecimal(ActionEvent e){

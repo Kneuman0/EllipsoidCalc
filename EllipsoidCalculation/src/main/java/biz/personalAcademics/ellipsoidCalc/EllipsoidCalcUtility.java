@@ -1,7 +1,9 @@
 package biz.personalAcademics.ellipsoidCalc;
 
 public class EllipsoidCalcUtility {
-	public double getVolume(double startRadianTheta, double endRadianTheta,
+	
+	
+	public static double getVolume(double startRadianTheta, double endRadianTheta,
 			double radianMeasureOffZAxisEnd, double radianMeasureOffZAxisStart,
 			double a, double b, double c) {
 		
@@ -20,7 +22,7 @@ public class EllipsoidCalcUtility {
 	 * @return
 	 * @throws InvalidUserInputException
 	 */
-	public double convertToDecimal(String input)
+	public static double convertToDecimal(String input)
 			throws InvalidUserInputException {
 		String[] fraction = input.split("/");
 		// Returns user input if array is not a fraction
@@ -46,7 +48,7 @@ public class EllipsoidCalcUtility {
 
 	}
 
-	public double convertThetaToRadians(String degrees, boolean degreeIsSelected)
+	public static double convertThetaToRadians(String degrees, boolean degreeIsSelected)
 			throws InvalidUserInputException {
 		double testDegree;
 

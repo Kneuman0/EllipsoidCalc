@@ -44,16 +44,15 @@ public class EllipsoidCalcController {
     @FXML
     private TextField thetaStart;
     
-    EllipsoidCalcUtility util;
     
     public void initialize(){
-    	util = new EllipsoidCalcUtility();
+    	// Deliberately left blank
     }
     
     public void convertDecimal(ActionEvent e){
     	TextField temp = (TextField) e.getSource();
     	try {
-			temp.setText(String.format("%f", util.convertToDecimal(temp.getText())));
+			temp.setText(String.format("%f", EllipsoidCalcUtility.convertToDecimal(temp.getText())));
 		} catch (InvalidUserInputException e1) {
 			warningLabel.setText(String.format("Non-number %s detected! Fix this to proceed", e1.getMessage()));
 		}
@@ -77,11 +76,11 @@ public class EllipsoidCalcController {
 			warningLabel.setText(String.format("Non-number %s detected", e1.getMessage()));
 		}
     	try {
-			double thetaBegin = util.convertThetaToRadians(startAngle, inDegrees);
-			double thetaEnd = util.convertThetaToRadians(endAngle, inDegrees);
-			double phiAngleEnd = util.convertThetaToRadians(zAxisAngleEnd, inDegrees);
-			double phiAngleStart = util.convertThetaToRadians(zAxisAngleStart, inDegrees);
-			volumeAnswer.setText(String.format("%f", util.getVolume(thetaBegin, thetaEnd, phiAngleEnd, phiAngleStart,
+			double thetaBegin = EllipsoidCalcUtility.convertThetaToRadians(startAngle, inDegrees);
+			double thetaEnd = EllipsoidCalcUtility.convertThetaToRadians(endAngle, inDegrees);
+			double phiAngleEnd = EllipsoidCalcUtility.convertThetaToRadians(zAxisAngleEnd, inDegrees);
+			double phiAngleStart = EllipsoidCalcUtility.convertThetaToRadians(zAxisAngleStart, inDegrees);
+			volumeAnswer.setText(String.format("%f", EllipsoidCalcUtility.getVolume(thetaBegin, thetaEnd, phiAngleEnd, phiAngleStart,
 					aAxis, bAxis, cAxis)));
 		} catch (InvalidUserInputException e) {
 			warningLabel.setText(String.format("Non number %s Detected", e.getMessage()));

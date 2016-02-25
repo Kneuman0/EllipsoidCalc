@@ -2,8 +2,6 @@ package biz.personalAcademics.ellipsoidCalcTest;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
-
-import org.hamcrest.core.StringContains;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,7 +29,7 @@ public class EllipsoidCalcUtilityTest {
 	public void testConversionToRadiansForInvalidUserInput(){
 		EllipsoidCalcUtility ellipse = new EllipsoidCalcUtility();
 		invalidInput.expect(InvalidUserInputException.class);
-		invalidInput.expectMessage(StringContains.containsString("abcd"));
+		invalidInput.expectMessage(containsString("abcd"));
 		ellipse.convertThetaToRadians("abcd", true);
 	}
 	

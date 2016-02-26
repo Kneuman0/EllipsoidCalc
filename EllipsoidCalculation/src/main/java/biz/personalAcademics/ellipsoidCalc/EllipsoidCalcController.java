@@ -52,14 +52,8 @@ public class EllipsoidCalcController {
     
     
     public void initialize(){
-    	Image image = null;
-		try {
-			image = new Image(EllipsoidCalcMain.class.getResourceAsStream("/resources/PcoordinatesImage.jpg"));
-		} catch (NullPointerException e) {
-			System.out.println("Loading image for IDE");
-			image = new Image(EllipsoidCalcMain.class.getResourceAsStream("/PcoordinatesImage.jpg"));
-		}
-    	diagramImage.setImage(image);
+    	Image image = new Image(EllipsoidCalcMain.class.getResourceAsStream("/resources/PcoordinatesImage.jpg"));
+		diagramImage.setImage(image);
     }
     
     public void convertDecimal(ActionEvent e){

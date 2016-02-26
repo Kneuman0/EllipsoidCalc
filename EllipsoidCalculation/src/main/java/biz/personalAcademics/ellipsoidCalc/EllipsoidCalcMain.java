@@ -12,10 +12,22 @@ public class EllipsoidCalcMain extends Application{
 	public void start(Stage stage) {
 		Parent parent = null;
 		try {
-			parent = FXMLLoader.load(getClass().getResource("EllipsoidVolumeGUI.fxml"));
+			// loads resources when inside runnable jar
+			parent = FXMLLoader.load(getClass().getResource("/resources/EllipsoidVolumeGUI.fxml"));
+			
+		} catch (RuntimeException e) {
+			System.out.println("Trying path in IDE");
+			try {
+			// loads resources when opened inside IDE
+				parent = FXMLLoader.load(getClass().getResource("/EllipsoidVolumeGUI.fxml"));
+			} catch (IOException e1) {
+				System.out.println("error in parent declaration");
+				e1.printStackTrace();
+			}
+			
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("error in parent declaration");
 		}
 		Scene scene = new Scene(parent);
 

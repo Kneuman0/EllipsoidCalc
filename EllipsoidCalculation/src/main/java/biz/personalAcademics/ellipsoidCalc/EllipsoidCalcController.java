@@ -52,7 +52,13 @@ public class EllipsoidCalcController {
     
     
     public void initialize(){
-    	Image image = new Image(EllipsoidCalcMain.class.getResourceAsStream("PcoordinatesImage.jpg"));
+    	Image image = null;
+		try {
+			image = new Image(EllipsoidCalcMain.class.getResourceAsStream("/resources/PcoordinatesImage.jpg"));
+		} catch (NullPointerException e) {
+			System.out.println("Loading image for IDE");
+			image = new Image(EllipsoidCalcMain.class.getResourceAsStream("/PcoordinatesImage.jpg"));
+		}
     	diagramImage.setImage(image);
     }
     

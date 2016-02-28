@@ -46,7 +46,7 @@
          </children>
       </Pane>
       <Label layoutX="415.0" layoutY="309.0" prefHeight="38.0" prefWidth="160.0" text="When Using radians DO NOT include π" wrapText="true" />
-      <Label fx:id="warningLabel" layoutX="180.0" layoutY="141.0" prefHeight="118.0" prefWidth="224.0" textFill="#f50505" wrapText="true" />
+      <Label fx:id="warningLabel" layoutX="180.0" layoutY="94.0" prefHeight="38.0" prefWidth="396.0" textFill="#f50505" wrapText="true" />
       <Label layoutX="14.0" layoutY="339.0" text="Volume:">
          <font>
             <Font size="22.0" />
@@ -63,6 +63,6 @@
          </font>
       </Button>
       <Label layoutX="14.0" layoutY="85.0" prefHeight="56.0" prefWidth="160.0" text="Press enter in each textbox that contains a fraction to have it converted to decimal" textFill="#3105fa" wrapText="true" />
-      <ImageView fx:id="diagramImage" fitHeight="150.0" fitWidth="153.0" layoutX="232.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="diagramImage" fitHeight="150.0" fitWidth="153.0" layoutX="230.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>

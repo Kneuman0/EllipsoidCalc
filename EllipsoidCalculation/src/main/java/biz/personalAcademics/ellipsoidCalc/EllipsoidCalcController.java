@@ -69,6 +69,7 @@ public class EllipsoidCalcController {
     }
     
     public void calculateButton(){
+    	warningLabel.setText("");
     	if(ensureAllEntriesLogged()){
     		return;
     	}

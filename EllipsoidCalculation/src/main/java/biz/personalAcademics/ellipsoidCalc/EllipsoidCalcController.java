@@ -88,6 +88,7 @@ public class EllipsoidCalcController {
 			cAxis = Double.parseDouble(c.getText());
 		} catch (NumberFormatException e1) {
 			warningLabel.setText(String.format("Non-number '%s' detected", e1.getMessage()));
+			return;
 		}
     	try {
 			double thetaBegin = EllipsoidCalcUtility.convertThetaToRadians(startAngle, inDegrees);
@@ -98,6 +99,7 @@ public class EllipsoidCalcController {
 					aAxis, bAxis, cAxis)));
 		} catch (InvalidUserInputException e) {
 			warningLabel.setText(String.format("Non number '%s' Detected", e.getMessage()));
+			return;
 		}
     	
     }

@@ -18,10 +18,8 @@ public class EllipsoidCalcUtility {
 			double a, double b, double c) {
 		
 		double oneThird = 1 / (double)3;
-		double volume = (-oneThird * (Math.cos(radianMeasureOffZAxisEnd)
-				* endRadianTheta * a * b * c)) + (oneThird * (endRadianTheta * a * b * c) * Math.cos(radianMeasureOffZAxisStart))
-						+ (oneThird * (Math.cos(radianMeasureOffZAxisEnd) * startRadianTheta * a * b * c))
-						- (oneThird * startRadianTheta * a * b * c * Math.cos(radianMeasureOffZAxisStart));
+		double volume = (-oneThird)*(a*b*c*(Math.cos(radianMeasureOffZAxisEnd) - 
+				Math.cos(radianMeasureOffZAxisStart)))*(endRadianTheta - startRadianTheta);
 		return volume;
 	}
 

@@ -1,7 +1,5 @@
 package biz.personalAcademics.ellipsoidCalc;
 
-import org.omg.PortableInterceptor.USER_EXCEPTION;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

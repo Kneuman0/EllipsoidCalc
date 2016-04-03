@@ -1,25 +1,27 @@
 package biz.personalAcademics.ellipsoidCalc;
 
 public class Ellipsoid {
-	
-	double startRadianTheta, endRadianTheta, radianMeasureOffZAxisEnd, radianMeasureOffZAxisStart;
-	
-	double a, b, c;
-	
+
+	private double startRadianTheta, endRadianTheta, radianMeasureOffZAxisEnd,
+			radianMeasureOffZAxisStart, a, b, c;
+
 	public Ellipsoid(double startRadianTheta, double endRadianTheta,
 			double radianMeasureOffZAxisEnd, double radianMeasureOffZAxisStart,
 			double a, double b, double c) {
+
 		this.startRadianTheta = startRadianTheta;
 		this.endRadianTheta = endRadianTheta;
 		this.radianMeasureOffZAxisEnd = radianMeasureOffZAxisEnd;
 		this.radianMeasureOffZAxisStart = radianMeasureOffZAxisStart;
 		this.a = a;
 		this.b = b;
-		this.c = c;		
+		this.c = c;
 	}
-	
+
 	/**
-	 * Finds the volume of the ellipsoid based off the spherical coordinates the user passed in
+	 * Finds the volume of the ellipsoid based off the spherical coordinates the
+	 * user passed in
+	 * 
 	 * @param startRadianTheta
 	 * @param endRadianTheta
 	 * @param radianMeasureOffZAxisEnd
@@ -30,14 +32,15 @@ public class Ellipsoid {
 	 * @return
 	 */
 	public double getVolume() {
-		
-		double oneThird = 1 / (double)3;
-		double volume = (-oneThird)*(a*b*c*(Math.cos(radianMeasureOffZAxisEnd) - 
-				Math.cos(radianMeasureOffZAxisStart)))*(endRadianTheta - startRadianTheta);
+
+		double oneThird = 1 / (double) 3;
+		double volume = (-oneThird)
+				* (a * b * c * (Math.cos(radianMeasureOffZAxisEnd) - Math
+						.cos(radianMeasureOffZAxisStart)))
+				* (endRadianTheta - startRadianTheta);
 		return volume;
 	}
-	
-	
+
 	/**
 	 * @return the startRadianTheta
 	 */
@@ -46,7 +49,8 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * @param startRadianTheta the startRadianTheta to set
+	 * @param startRadianTheta
+	 *            the startRadianTheta to set
 	 */
 	public void setStartRadianTheta(double startRadianTheta) {
 		this.startRadianTheta = startRadianTheta;
@@ -60,7 +64,8 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * @param endRadianTheta the endRadianTheta to set
+	 * @param endRadianTheta
+	 *            the endRadianTheta to set
 	 */
 	public void setEndRadianTheta(double endRadianTheta) {
 		this.endRadianTheta = endRadianTheta;
@@ -74,7 +79,8 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * @param radianMeasureOffZAxisEnd the radianMeasureOffZAxisEnd to set
+	 * @param radianMeasureOffZAxisEnd
+	 *            the radianMeasureOffZAxisEnd to set
 	 */
 	public void setRadianMeasureOffZAxisEnd(double radianMeasureOffZAxisEnd) {
 		this.radianMeasureOffZAxisEnd = radianMeasureOffZAxisEnd;
@@ -88,7 +94,8 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * @param radianMeasureOffZAxisStart the radianMeasureOffZAxisStart to set
+	 * @param radianMeasureOffZAxisStart
+	 *            the radianMeasureOffZAxisStart to set
 	 */
 	public void setRadianMeasureOffZAxisStart(double radianMeasureOffZAxisStart) {
 		this.radianMeasureOffZAxisStart = radianMeasureOffZAxisStart;
@@ -102,7 +109,8 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * @param a the a to set
+	 * @param a
+	 *            the a to set
 	 */
 	public void setA(double a) {
 		this.a = a;
@@ -116,7 +124,8 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * @param b the b to set
+	 * @param b
+	 *            the b to set
 	 */
 	public void setB(double b) {
 		this.b = b;
@@ -130,7 +139,8 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * @param c the c to set
+	 * @param c
+	 *            the c to set
 	 */
 	public void setC(double c) {
 		this.c = c;
@@ -171,14 +181,15 @@ public class Ellipsoid {
 
 	/**
 	 * If user inputs angle in degrees, it is converted and returned in radians.
-	 * If radians were chosen, pi is multiplied in 
+	 * If radians were chosen, pi is multiplied in
+	 * 
 	 * @param degrees
 	 * @param degreeIsSelected
 	 * @return
 	 * @throws InvalidUserInputException
 	 */
-	public static double convertThetaToRadians(String degrees, boolean degreeIsSelected)
-			throws InvalidUserInputException {
+	public static double convertThetaToRadians(String degrees,
+			boolean degreeIsSelected) throws InvalidUserInputException {
 		double testDegree;
 
 		try {
@@ -193,8 +204,8 @@ public class Ellipsoid {
 			return testDegree * Math.PI;
 		}
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return String.format("%f", this.getVolume());
 	}
 

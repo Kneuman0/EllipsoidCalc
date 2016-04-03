@@ -59,7 +59,7 @@ public class EllipsoidCalcController {
     public void convertDecimal(ActionEvent e){
     	TextField temp = (TextField) e.getSource();
     	try {
-			temp.setText(String.format("%f", EllipsoidCalcUtility.convertToDecimal(temp.getText())));
+			temp.setText(String.format("%f", Ellipsoid.convertToDecimal(temp.getText())));
 		} catch (InvalidUserInputException e1) {
 			warningLabel.setText(String.format("Non-number '%s' detected! Fix this to proceed", e1.getMessage()));
 		}
@@ -89,12 +89,15 @@ public class EllipsoidCalcController {
 			return;
 		}
     	try {
-			double thetaBegin = EllipsoidCalcUtility.convertThetaToRadians(startAngle, inDegrees);
-			double thetaEnd = EllipsoidCalcUtility.convertThetaToRadians(endAngle, inDegrees);
-			double phiAngleEnd = EllipsoidCalcUtility.convertThetaToRadians(zAxisAngleEnd, inDegrees);
-			double phiAngleStart = EllipsoidCalcUtility.convertThetaToRadians(zAxisAngleStart, inDegrees);
-			volumeAnswer.setText(String.format("%f", EllipsoidCalcUtility.getVolume(thetaBegin, thetaEnd, phiAngleEnd, phiAngleStart,
-					aAxis, bAxis, cAxis)));
+			double thetaBegin = Ellipsoid.convertThetaToRadians(startAngle, inDegrees);
+			double thetaEnd = Ellipsoid.convertThetaToRadians(endAngle, inDegrees);
+			double phiAngleEnd = Ellipsoid.convertThetaToRadians(zAxisAngleEnd, inDegrees);
+			double phiAngleStart = Ellipsoid.convertThetaToRadians(zAxisAngleStart, inDegrees);
+			
+			Ellipsoid ellip = new Ellipsoid(thetaBegin, thetaEnd, phiAngleEnd, phiAngleStart,
+					aAxis, bAxis, cAxis);
+			
+			volumeAnswer.setText(ellip.toString());
 		} catch (InvalidUserInputException e) {
 			warningLabel.setText(String.format("Non number '%s' Detected", e.getMessage()));
 			return;

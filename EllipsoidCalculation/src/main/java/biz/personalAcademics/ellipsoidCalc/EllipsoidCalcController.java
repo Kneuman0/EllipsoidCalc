@@ -8,6 +8,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 
 public class EllipsoidCalcController {
 
@@ -50,10 +56,14 @@ public class EllipsoidCalcController {
     @FXML
     private TextField thetaStart;
     
+    @FXML
+    private AnchorPane anchorPane;
+    
     
     public void initialize(){
     	Image image = new Image(EllipsoidCalcMain.class.getResourceAsStream("/resources/PcoordinatesImage.jpg"));
 		diagramImage.setImage(image);
+		setBackground();
     }
     
     public void convertDecimal(ActionEvent e){
@@ -144,6 +154,15 @@ public class EllipsoidCalcController {
     	}
     	
     	return incompleteInput;
+    }
+    
+    private void setBackground(){
+    	Image logo = new Image(EllipsoidCalcMain.class.getResourceAsStream("/resources/mathBackground.jpg"));
+    	BackgroundSize logoSize = new BackgroundSize(600, 400, false, false, true, true);
+		 BackgroundImage image = new BackgroundImage(logo, BackgroundRepeat.NO_REPEAT, 
+				 BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, logoSize);
+		 Background background = new Background(image);
+		 anchorPane.setBackground(background);
     }
     
     

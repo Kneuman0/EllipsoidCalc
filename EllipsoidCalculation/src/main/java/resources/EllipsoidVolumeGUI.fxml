@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
@@ -25,10 +27,13 @@
             <TextField fx:id="a" layoutX="26.0" layoutY="29.0" onAction="#convertDecimal" prefHeight="25.0" prefWidth="122.0" />
          </children>
       </Pane>
-      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="2.0" layoutY="44.0" prefHeight="30.0" prefWidth="153.0" text="This program requires " textFill="WHITE" wrapText="true">
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="19.0" layoutY="44.0" prefHeight="30.0" prefWidth="575.0" text="This program requires that you have a basic understanding of ellipsoids and spherical coordinates " textFill="RED" wrapText="true">
          <font>
             <Font name="System Bold" size="12.0" />
-         </font></Label>
+         </font>
+         <effect>
+            <DropShadow color="WHITE" spread="0.81" />
+         </effect></Label>
       <Pane layoutX="415.0" layoutY="141.0" prefHeight="169.0" prefWidth="160.0" style="-fx-border-color: black;">
          <children>
             <Label layoutX="23.0" layoutY="6.0" text="Spherical Dimensions" />
@@ -51,17 +56,26 @@
       <Label layoutX="415.0" layoutY="309.0" prefHeight="38.0" prefWidth="160.0" text="When Using radians DO NOT include π" wrapText="true">
          <font>
             <Font name="System Bold" size="12.0" />
-         </font></Label>
+         </font>
+         <effect>
+            <DropShadow color="WHITE" spread="0.74" />
+         </effect></Label>
       <Label fx:id="warningLabel" layoutX="180.0" layoutY="94.0" prefHeight="38.0" prefWidth="396.0" textFill="#f50505" wrapText="true" />
-      <Label layoutX="14.0" layoutY="339.0" text="Volume:">
+      <Label layoutX="14.0" layoutY="339.0" text="Volume:" textFill="#2b00ff" textOverrun="WORD_ELLIPSIS">
          <font>
             <Font name="System Bold" size="22.0" />
          </font>
+         <effect>
+            <DropShadow color="#eeeeee" spread="0.85" />
+         </effect>
       </Label>
       <Label fx:id="volumeAnswer" layoutX="105.0" layoutY="340.0" prefHeight="32.0" prefWidth="301.0">
          <font>
             <Font size="22.0" />
          </font>
+         <effect>
+            <DropShadow color="WHITE" spread="0.79" />
+         </effect>
       </Label>
       <Button layoutX="14.0" layoutY="280.0" mnemonicParsing="false" onAction="#calculateButton" prefHeight="48.0" prefWidth="160.0" text="Calculate" textFill="#0a6f03">
          <font>
@@ -71,16 +85,10 @@
       <Label layoutX="14.0" layoutY="85.0" prefHeight="56.0" prefWidth="168.0" text="Press enter in each textbox that contains a fraction to have it converted to decimal" textFill="#3105fa" wrapText="true">
          <font>
             <Font name="System Bold" size="12.0" />
-         </font></Label>
-      <ImageView fx:id="diagramImage" fitHeight="150.0" fitWidth="153.0" layoutX="230.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true" />
-      <Label layoutX="148.0" layoutY="51.0" prefHeight="17.0" prefWidth="366.0" text="that you have a basic understanding of ellipsoids and spherical" textFill="RED">
-         <font>
-            <Font name="System Bold" size="12.0" />
          </font>
-      </Label>
-      <Label layoutX="507.0" layoutY="51.0" prefHeight="17.0" prefWidth="78.0" text="coordinates" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="12.0" />
-         </font></Label>
+         <effect>
+            <DropShadow color="WHITE" spread="0.79" />
+         </effect></Label>
+      <ImageView fx:id="diagramImage" fitHeight="150.0" fitWidth="153.0" layoutX="230.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>

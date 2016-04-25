@@ -18,7 +18,10 @@
       </Label>
       <Pane layoutX="14.0" layoutY="141.0" prefHeight="118.0" prefWidth="160.0" style="-fx-border-color: black;">
          <children>
-            <Label layoutX="37.0" layoutY="6.0" text="Axis Dimensions" />
+            <Label layoutX="37.0" layoutY="6.0" text="Axis Dimensions">
+               <effect>
+                  <DropShadow color="WHITE" spread="0.9" />
+               </effect></Label>
             <Label layoutX="4.0" layoutY="34.0" text="a = " />
             <Label layoutX="4.0" layoutY="59.0" text="b = " />
             <Label layoutX="4.0" layoutY="87.0" text="c = " />
@@ -36,7 +39,10 @@
          </effect></Label>
       <Pane layoutX="415.0" layoutY="141.0" prefHeight="169.0" prefWidth="160.0" style="-fx-border-color: black;">
          <children>
-            <Label layoutX="23.0" layoutY="6.0" text="Spherical Dimensions" />
+            <Label layoutX="23.0" layoutY="6.0" text="Spherical Dimensions">
+               <effect>
+                  <DropShadow color="WHITE" spread="0.9" />
+               </effect></Label>
             <Label layoutX="4.0" layoutY="30.0" text="θ Start = " />
             <Label layoutX="3.0" layoutY="59.0" text="θ End =" />
             <Label layoutX="4.0" layoutY="87.0" text="φ Start =" />

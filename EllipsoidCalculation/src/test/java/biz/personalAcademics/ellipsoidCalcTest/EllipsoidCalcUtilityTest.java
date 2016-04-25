@@ -39,7 +39,7 @@ public class EllipsoidCalcUtilityTest {
 		Ellipsoid ellip = new Ellipsoid(0, (Math.PI * .5), (Math.PI * .5), 0,
 				2, 2, 3);
 		
-		assertThat(String.format("%.13f", ellip.getVolume()),
+		assertThat(String.format("%.13f", ellip.getExactVolume()),
 				is(String.format("%.13f", EighthOfEllipseVolume)));
 	}
 
@@ -51,7 +51,7 @@ public class EllipsoidCalcUtilityTest {
 		double quarterOfEllipseVolume = (1 / (double) 3) * Math.PI * 2 * 2 * 3;
 		Ellipsoid ellip = new Ellipsoid(0, (Math.PI * .5), Math.PI, 0, 2, 2, 3);
 		
-		assertThat(String.format("%.13f", ellip.getVolume()),
+		assertThat(String.format("%.13f", ellip.getExactVolume()),
 				is(String.format("%.13f", quarterOfEllipseVolume)));
 	}
 
@@ -63,7 +63,7 @@ public class EllipsoidCalcUtilityTest {
 		double halfOfEllipseVolume = (2 / (double) 3) * Math.PI * 2 * 2 * 3;
 		Ellipsoid ellip = new Ellipsoid(0, (Math.PI), Math.PI, 0, 2, 2, 3);
 		
-		assertThat(String.format("%.13f", ellip.getVolume()),
+		assertThat(String.format("%.13f", ellip.getExactVolume()),
 				is(String.format("%.13f", halfOfEllipseVolume)));
 	}
 
@@ -75,7 +75,7 @@ public class EllipsoidCalcUtilityTest {
 		double fullEllipseVolume = (4 / (double) 3) * Math.PI * 2 * 2 * 3;
 		Ellipsoid ellip = new Ellipsoid(0, (Math.PI * 2), Math.PI, 0, 2, 2, 3);
 		
-		assertThat(String.format("%.13f", ellip.getVolume()),
+		assertThat(String.format("%.13f", ellip.getExactVolume()),
 				is(String.format("%.13f", fullEllipseVolume)));
 	}
 

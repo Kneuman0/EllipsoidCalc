@@ -2,9 +2,13 @@ package biz.personalAcademics.ellipsoidCalcTest;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.objenesis.instantiator.basic.AccessibleInstantiator;
+
+import java.lang.reflect.AccessibleObject;
 
 import biz.personalAcademics.ellipsoidCalc.*;
 
@@ -13,6 +17,16 @@ public class EllipsoidCalcUtilityTest {
 	@Rule
 	public ExpectedException invalidInput = ExpectedException.none();
 
+	@Test
+	public void testEstimatedVolumeCalculation(){
+		double EighthOfEllipseVolume = (1 / (double) 6) * Math.PI * 2 * 2 * 3;
+		Ellipsoid ellip = new Ellipsoid(0, (Math.PI * .5), (Math.PI * .5), 0,
+				2, 2, 3);
+		
+		assertThat(String.format("%.2f", ellip.getEstimatedVolume(500000000)),
+				is(String.format("%.2f", EighthOfEllipseVolume)));
+	}
+	
 	@Test
 	public void testConversionToDecimal() {
 		assertThat(Ellipsoid.convertToDecimal("3/4"), is(.75));

@@ -1,15 +1,19 @@
 package biz.personalAcademics.ellipsoidCalc;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Random;
-
 
 public class Ellipsoid {
 
 	private double startRadianTheta, endRadianTheta, radianMeasureOffZAxisEnd,
 			radianMeasureOffZAxisStart, a, b, c;
-	
+
+	private int x, y, z;
+
 	Random portionOfAxis;
-	
 
 	public Ellipsoid(double startRadianTheta, double endRadianTheta,
 			double radianMeasureOffZAxisEnd, double radianMeasureOffZAxisStart,
@@ -22,15 +26,18 @@ public class Ellipsoid {
 		this.a = a;
 		this.b = b;
 		this.c = c;
-		
+		this.x = 0;
+		this.y = 1;
+		this.z = 2;
+
 		/*
-		 *  the nextDouble method will be called from this object and 
-		 *  multiplied by one of the axes. This will yield a coordinate that lays 
-		 *  within the 1st octant.
+		 * the nextDouble method will be called from this object and multiplied
+		 * by one of the axes. This will yield a coordinate that lays within the
+		 * 1st octant.
 		 */
-		
+
 		portionOfAxis = new Random();
-		
+
 	}
 
 	/**
@@ -55,215 +62,453 @@ public class Ellipsoid {
 				* (endRadianTheta - startRadianTheta);
 		return volume;
 	}
-	
-	public double getEstimatedVolume(int sampleSize){
+
+	/**
+	 * Estimates the volume of the ellipsoid using the specified number of
+	 * sample points
+	 * 
+	 * @param sampleSize
+	 * @return
+	 */
+	public double getEstimatedVolume(int sampleSize) {
 		int insideShape = 0;
-		
-		for(int i = 0; i < 500; i++){
-			if(determineIfPointIsInsideShape(generate3DSamplePoint(), startRadianTheta, 
-					endRadianTheta, radianMeasureOffZAxisStart, radianMeasureOffZAxisEnd)){
+
+		for (int i = 0; i < sampleSize; i++) {
+			if (determineIfPointIsInsideShape(generateRandom3DSamplePoint())) {
 				insideShape++;
 			}
-			
-			
+
 		}
-		
-		double portionOfKnownVolume = insideShape / (double)sampleSize;
-		
-		return portionOfKnownVolume * a * b * c;
+
+		double portionOfKnownVolume = insideShape / (double) sampleSize;
+
+		// portion of volume of 3D system
+		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
 	}
-	
-//	private boolean determineXCoordinatePosition(double[] coord){
-//		double xLimit = a * Math.sqrt(1 - Math.pow(coord[2], 2)/(c * c) 
-//				- Math.pow(coord[1], 2)/(b * b));
-//		
-//		/*
-//		 *  If the generated point is less than the curve of the function then 
-//		 *  the point lays within the volume of the ellipsoid, otherwise its isn't.
-//		 */
-//		return coord[0] <= xLimit;
-//	}
-//	
-//	private boolean determineYCoordinatePosition(double[] coord){
-//		double yLimit = b * Math.sqrt(1 - Math.pow(coord[2], 2)/(c * c) 
-//				- Math.pow(coord[0], 2)/(a * a));
-//		
-//		/*
-//		 *  If the generated point is less than the curve of the function then 
-//		 *  the point lays within the volume of the ellipsoid, otherwise its isn't.
-//		 */
-//		return coord[1] <= yLimit;
-//	}
-	
-	private boolean determineIfPointIsInsideShape(double[] coord, double thetaStart, double thetaEnd,
-			double phiStart, double phiEnd){
-		boolean insideShape = false;
-		
-		determineXAxisToThetaPhiLineToXYPlane(coord, thetaStart, thetaEnd, phiStart, phiEnd);
-		
-		/*
-		 *  MUST DETERMINE ALL OTHER SCENERIOS AND CODE SOLUTIONS TO EACH!
-		 */
-		return insideShape;
-	}
-	
-	
+
 	/**
-	 * Determines if the point is between the x axis and the line y = tan(theta) * x
-	 * Determines if the point is between the line z = tan(phi) * y
-	 * Determines if the point is inside the equation of the ellipsoid.
-	 * @param coord
-	 * @param thetaStart
-	 * @param thetaEnd
-	 * @param phiStart
-	 * @param phiEnd
+	 * Estimates the volume of the portion of the ellipsoid using 500000 sample
+	 * points
+	 * 
 	 * @return
 	 */
-	private boolean determineXAxisToThetaPhiLineToXYPlane(double[] coord, double thetaStart, double thetaEnd,
-			double phiStart, double phiEnd){
-		
-		boolean insideShape = false;
-		
-		if(determineIfPointIsBetweenPhiStartAndXYPlane(coord, phiStart) ||
-			determineIfPointIsBetweenXAxisAndThetaStart(coord, thetaEnd) ||
-					determineIfInsideEllipsoid(coord)){
-			
-			insideShape = true;
-				
+	public double getEstimatedVolume() {
+		int insideShape = 0;
+		final int sampleSize = 5_000_000;
+
+		for (int i = 0; i < sampleSize; i++) {
+			if (determineIfPointIsInsideShape(generateRandom3DSamplePoint())) {
+				insideShape++;
 			}
-		return insideShape;
+
+		}
+
+		double portionOfKnownVolume = insideShape / (double) sampleSize;
+
+		// portion of volume of 3D system
+		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
 	}
 	
-	
+	public double getEstimatedVolumeThruUniformDistribution(){
+		int insideShape = 0;
+		ArrayList<double[]> coord = generateUniformDistributionOfSamplePoints();
+
+		for (int i = 0; i < coord.size(); i++) {
+			if (determineIfPointIsInsideShape(coord.get(i))) {
+				insideShape++;
+			}
+
+		}
+
+		double portionOfKnownVolume = insideShape / (double) (coord.size());
+		System.out.println(portionOfKnownVolume);
+		System.out.println(insideShape);
+
+		// portion of volume of 3D system
+		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
+	}
+
+	private boolean determineIfPointIsInsideShape(double[] coord) {
+		boolean insideShape = false;
+
+		try {
+			if (pointInsideEquationOfEllipsoid(coord)
+					&& pointBetweenPhiStartAndPhiEnd(coord)
+					&& pointBetweenThetaStartAndThetaEnd(coord)) {
+				insideShape = true;
+			}
+		} catch (NegativeZAxisException e) {
+			if (radianMeasureOffZAxisEnd == Math.PI) {
+				insideShape = true;
+			}
+		} catch (PositiveZAxisException e1) {
+			if (radianMeasureOffZAxisStart == Math.PI / 2) {
+				insideShape = true;
+			}
+		}
+
+		return insideShape;
+	}
+
+	private boolean pointInsideEquationOfEllipsoid(double[] coord) {
+		boolean insideShape = false;
+
+		// point is inside shape if x^2/a^2 + y^2/b^2 + z^2/c^2 <= 1
+		double valueOfPointInEllipsoidEquation = (coord[x] * coord[x])
+				/ (a * a) + (coord[y] * coord[y]) / (b * b)
+				+ (coord[z] * coord[z]) / (c * c);
+
+		if (valueOfPointInEllipsoidEquation <= 1) {
+			insideShape = true;
+		}
+
+		return insideShape;
+	}
+
+	private boolean pointBetweenPhiStartAndPhiEnd(double[] coord) {
+		boolean insidePhiBound = false;
+
+		try {
+			if (radianMeasureOffZAxisStart <= getPhiValueOfSampleCoord(coord)
+					&& getPhiValueOfSampleCoord(coord) <= radianMeasureOffZAxisEnd) {
+				insidePhiBound = true;
+			}
+		} catch (PointOnOriginException e) {
+			insidePhiBound = true;
+			System.out.println(e.getMessage());
+		}
+		return insidePhiBound;
+	}
+
+	private boolean pointBetweenThetaStartAndThetaEnd(double[] coord)
+			throws NegativeZAxisException {
+		boolean insideThetaBound = false;
+
+		try {
+			if (startRadianTheta <= getThetaValueOfSampleCoordStartTheta(coord)
+					&& getThetaValueOfSampleCoordEndTheta(coord) <= endRadianTheta) {
+				insideThetaBound = true;
+			}
+		} catch (PointOnOriginException e) {
+			insideThetaBound = true;
+			System.out.println(e.getMessage());
+		}
+
+		return insideThetaBound;
+	}
+
+	private double getPhiValueOfSampleCoord(double[] coord) {
+		// above xy plane (positive z value)
+		if (coord[z] > 0 && coord[x] != 0 && coord[y] != 0) {
+
+			// arcCos(z/sqrt(x^2 + y^2 + z^2))
+			return Math.acos(coord[z]
+					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+							+ coord[z] * coord[z])));
+
+			// below xy plane (negative z value)
+		} else if (coord[z] < 0 && coord[x] != 0 && coord[y] != 0) {
+
+			// arcCos(z/sqrt(x^2 + y^2 + z^2)) + pi
+			return Math.acos(coord[z]
+					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+							+ coord[z] * coord[z])))
+					+ Math.PI;
+
+			// on positive z axis = 0
+		} else if (coord[z] > 0 && coord[x] == 0 && coord[y] == 0) {
+			return 0;
+
+			// on negative z axis = pi
+		} else if (coord[z] < 0 && coord[x] == 0 && coord[y] == 0) {
+			return Math.PI;
+
+			// in zy plane above xy plane
+		} else if (coord[z] > 0 && coord[x] == 0 && coord[y] != 0) {
+
+			return Math.acos(coord[z]
+					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+							+ coord[z] * coord[z])));
+
+			// in zy plane below xy plane
+		} else if (coord[z] < 0 && coord[x] == 0 && coord[y] != 0) {
+
+			return Math.acos(coord[z]
+					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+							+ coord[z] * coord[z])))
+					+ Math.PI;
+
+			// in zx plane above xy plane
+		} else if (coord[z] > 0 && coord[x] != 0 && coord[y] == 0) {
+
+			return Math.acos(coord[z]
+					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+							+ coord[z] * coord[z])));
+
+			// in zx plane below xy plane
+		} else if (coord[z] < 0 && coord[x] != 0 && coord[y] == 0) {
+
+			return Math.acos(coord[z]
+					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+							+ coord[z] * coord[z])))
+					+ Math.PI;
+
+			// in xy plane
+		} else if (coord[z] == 0) {
+			return Math.PI / 2;
+
+			// on origin
+		} else {
+
+			throw new PointOnOriginException(coord);
+		}
+
+		// do case where phi is below x y plane
+
+	}
+
+	private double getThetaValueOfSampleCoordStartTheta(double[] coord)
+			throws PositiveZAxisException, NegativeArraySizeException,
+			PointOnOriginException {
+		// first quadrant
+		if (coord[x] > 0 && coord[y] > 0) {
+			return Math.atan(coord[y] / coord[x]);
+
+			// Second quadrant
+		} else if (coord[x] < 0 && coord[y] > 0) {
+			return Math.atan(coord[y] / coord[x]) + Math.PI;
+
+			// Third Quadrant
+		} else if (coord[x] < 0 && coord[y] < 0) {
+			return Math.atan(coord[y] / coord[x]) + Math.PI;
+
+			// Fourth Quadrant
+		} else if (coord[x] > 0 && coord[y] < 0) {
+			return Math.atan(coord[y] / coord[x]) + 2 * Math.PI;
+
+			// on positive y axis
+		} else if (coord[x] == 0 && coord[y] > 0) {
+			return Math.PI / 2;
+
+			// on negative y axis
+		} else if (coord[x] == 0 && coord[y] < 0) {
+			return (3 / 2) * Math.PI;
+
+			// on positive x axis (choosing 0 for radian measure because this is
+			// the start value)
+		} else if (coord[x] > 0 && coord[y] == 0) {
+			return 0;
+
+			// on negative x axis
+		} else if (coord[x] < 0 && coord[y] == 0) {
+			return Math.PI;
+
+			// on origin
+		} else if (coord[x] == 0 && coord[y] == 0 && coord[z] < 0) {
+
+			throw new NegativeZAxisException(coord);
+
+		} else if (coord[x] == 0 && coord[y] == 0 && coord[z] > 0) {
+
+			throw new PositiveZAxisException(coord);
+
+			// on origin
+		} else {
+			throw new PointOnOriginException(coord);
+		}
+	}
+
+	private double getThetaValueOfSampleCoordEndTheta(double[] coord)
+			throws PositiveZAxisException, NegativeArraySizeException,
+			PointOnOriginException {
+		// first quadrant
+		if (coord[x] > 0 && coord[y] > 0) {
+			return Math.atan(coord[y] / coord[x]);
+
+			// Second quadrant
+		} else if (coord[x] < 0 && coord[y] > 0) {
+			return Math.atan(coord[y] / coord[x]) + Math.PI;
+
+			// Third Quadrant
+		} else if (coord[x] < 0 && coord[y] < 0) {
+			return Math.atan(coord[y] / coord[x]) + Math.PI;
+
+			// Fourth Quadrant
+		} else if (coord[x] > 0 && coord[y] < 0) {
+			return Math.atan(coord[y] / coord[x]) + 2 * Math.PI;
+
+			// on positive y axis
+		} else if (coord[x] == 0 && coord[y] > 0) {
+			return Math.PI / 2;
+
+			// on negative y axis
+		} else if (coord[x] == 0 && coord[y] < 0) {
+			return (3 / 2) * Math.PI;
+
+			// on positive x axis (choosing 0 for radian measure because this is
+			// the start value)
+		} else if (coord[x] > 0 && coord[y] == 0) {
+			return 2 * Math.PI;
+
+			// on negative x axis
+		} else if (coord[x] < 0 && coord[y] == 0) {
+			return Math.PI;
+
+		} else if (coord[x] < 0 && coord[y] == 0 && coord[z] < 0) {
+
+			throw new NegativeZAxisException(coord);
+
+		} else if (coord[x] < 0 && coord[y] == 0 && coord[z] > 0) {
+
+			throw new PositiveZAxisException(coord);
+
+			// on origin
+		} else {
+			throw new PointOnOriginException(coord);
+		}
+	}
+
+	private int getRandomNegation() {
+		boolean negativeSign = portionOfAxis.nextBoolean();
+
+		if (negativeSign) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
+
 	/**
-	 * This method determines whether or not the point lays between thetaStart
-	 * and thetaEnd. This method is ONLY used when thetaEnd is NOT pi/2
-	 * @param coord
-	 * @param theta
+	 * generates a 3 dimensional sample point that lays with the first octant of
+	 * the ellipsoid Cartesian field.
+	 * 
 	 * @return
 	 */
-	private boolean determineIfBetweenThetaValues(double[] coord, double thetaStart, double thetaEnd){
-		boolean insideShape = false;
-		
-		double yLower = Math.tan(thetaStart) * coord[0];
-		double yUpper = Math.tan(thetaEnd) * coord[0];
-		
-		if(coord[1] <= yUpper || yLower <= coord[1]){
-			insideShape = true;
-		}
-		
-		return insideShape;
-	}
-	
-	/**
-	 * Determines whether or not point is between the line y = tan(theta) * x and the y axis.
-	 * @param coord
-	 * @param thetaStart
-	 * @return
-	 */
-	private boolean determineIfPointIsBetweenYAxisAndThetaStart(double[] coord, double thetaStart){
-		boolean insideShape = false;
-		
-		double lowerYLimit = Math.tan(thetaStart) * coord[0];
-		
-		if(lowerYLimit <= coord[1]){
-			insideShape = true;
-		}
-		
-		return insideShape;
-	}
-	
-	/**
-	 * Determines whether or not point is between the line y = tan(theta) * x and the x axis.
-	 * @param coord
-	 * @param thetaStart
-	 * @return
-	 */
-	private boolean determineIfPointIsBetweenXAxisAndThetaStart(double[] coord, double thetaEnd){
-		boolean insideShape = false;
-		
-		double upperYLimit = Math.tan(thetaEnd) * coord[0];
-		
-		if(coord[1] <= upperYLimit){
-			insideShape = true;
-		}
-		
-		return insideShape;
-	}
-	
-	
-	/**
-	 * Use this method ONLY if phiStart is not 0 and phiEnd is NOT pi/2
-	 * @param coord
-	 * @param phiStart
-	 * @param phiEnd
-	 * @return
-	 */
-	private boolean determineIfPointIsBetweenPhiCones(double[] coord, double phiStart, double phiEnd){
-		boolean insideShape = false;
-		
-		if(coord[2] <= getZValueOfCone(coord, phiStart) || getZValueOfCone(coord, phiEnd) <= coord[2]){
-			insideShape = true;
-		}
-		
-		return insideShape;
-	}
-	
-	private boolean determineIfPointIsBetweenPhiStartAndXYPlane(double[] coord, double phiStart){
-		boolean insideShape = false;
-		
-		if(coord[2] <= getZValueOfCone(coord, phiStart)){
-			insideShape = true;
-		}
-		
-		return insideShape;
-		
-	}
-	
-	private boolean determineIfPointIsBetweenXZPlaneAndCone(double[] coord, double phiEnd){
-		boolean insideShape = false;
-		
-		if(getZValueOfCone(coord, phiEnd) <= coord[2]){
-			insideShape = true;
-		}
-		
-		return insideShape;
-	}
-	
-	private boolean determineIfInsideEllipsoid(double[] coord){
-		boolean insideShape = false;
-		
-		double zLimit = c * Math.sqrt(1 - Math.pow(coord[0], 2)/(a * a) 
-				- Math.pow(coord[1], 2)/(b * b));
-		/*
-		 * Checks if the point is inside the function. If all previous 
-		 * checks are true, and this check is true, the point is inside
-		 * of the shape.
-		 */
-		if(coord[2] <= zLimit){
-			insideShape = true;
-		}
-		
-		return insideShape;
-	}
-	
-	private double getZValueOfCone(double[] coord, double phi){
-		return Math.sqrt((coord[0] * coord[0]) + (coord[1] * coord[1]))/ Math.tan(phi);
-	}
-	
-	/**
-	 * generates a 3 dimensional sample point that lays with the first
-	 * octant of the ellipsoid Cartesian field.
-	 * @return
-	 */
-	public double[] generate3DSamplePoint(){
+	private double[] generateRandom3DSamplePoint() {
 		double[] samplePoint = new double[3];
-		
-		samplePoint[0] =  a * portionOfAxis.nextDouble(); 
-		samplePoint[1] = b * portionOfAxis.nextDouble();
-		samplePoint[2] = c * portionOfAxis.nextDouble();
-		
+
+		samplePoint[x] = a * portionOfAxis.nextDouble() * getRandomNegation();
+		samplePoint[y] = b * portionOfAxis.nextDouble() * getRandomNegation();
+		samplePoint[z] = c * portionOfAxis.nextDouble() * getRandomNegation();
+
 		return samplePoint;
+	}
+
+	public ArrayList<double[]> generateUniformDistributionOfSamplePoints() {
+		final int samplesOnAxis = 150;
+
+		ArrayList<double[]> coord = new ArrayList<double[]>();
+		double xVar = 0;
+		for (int xAxis = 0; xAxis < samplesOnAxis; xAxis++) {
+			double yVar = 0;
+			xVar += a / (double) samplesOnAxis;
+
+			for (int yAxis = 0; yAxis < samplesOnAxis; yAxis++) {
+				double zVar = 0;
+				yVar += b / (double) samplesOnAxis;
+
+				for (int zAxis = 0; zAxis < samplesOnAxis; zAxis++) {
+
+					zVar += c / (double) samplesOnAxis;
+
+					// first octant
+					coord.add(new double[] { xVar, yVar, zVar });
+					// second octant
+					coord.add(new double[] { xVar * -1, yVar, zVar });
+					// third octant
+					coord.add(new double[] { xVar * -1, yVar * -1, zVar });
+					// fourth octant
+					coord.add(new double[] { xVar, yVar * -1, zVar });
+					// fifth octant
+					coord.add(new double[] { xVar, yVar, zVar * -1 });
+					// sixth octant
+					coord.add(new double[] { xVar * -1, yVar, zVar * -1 });
+					// seventh octant
+					coord.add(new double[] { xVar * -1, yVar * -1, zVar * -1 });
+					// eighth octant
+					coord.add(new double[] { xVar, yVar * -1, zVar * -1 });
+
+				}
+
+			}
+
+		}
+
+		// point on origin
+		coord.add(new double[] { 0, 0, 0 });
+		// add special conditions
+		addZAxisPoints(coord, samplesOnAxis);
+		addXYPlanePoints(coord, samplesOnAxis);
+		addXAxisPoints(coord, samplesOnAxis);
+		addYAxisPoints(coord, samplesOnAxis);
+		return coord;
+
+	}
+
+	private void addZAxisPoints(ArrayList<double[]> coord, int samplesOnAxis) {
+		double zVar = 0;
+		zVar += c / (double) samplesOnAxis;
+
+		for (int i = 0; i < samplesOnAxis; i++) {
+			zVar += c / (double) samplesOnAxis;
+			coord.add(new double[] { 0, 0, zVar });
+			coord.add(new double[] { 0, 0, -zVar });
+		}
+
+	}
+
+	private void addXYPlanePoints(ArrayList<double[]> coord, int samplesOnAxis) {
+		double xVar = 0;
+
+		for (int i = 0; i < samplesOnAxis; i++) {
+
+			double yVar = 0;
+
+			for (int index = 0; index < samplesOnAxis; index++) {
+				yVar += b / (double) samplesOnAxis;
+
+				// first quadrant
+				coord.add(new double[] { xVar, yVar, 0 });
+				// second quadrant
+				coord.add(new double[] { -xVar, yVar, 0 });
+				// third quadrant
+				coord.add(new double[] { -xVar, -yVar, 0 });
+				// fourth quadrant
+				coord.add(new double[] { xVar, -yVar, 0 });
+
+			}
+
+		}
+	}
+
+	private void addXAxisPoints(ArrayList<double[]> coord, int samplesOnAxis) {
+		double xVar = 0;
+
+		for (int i = 0; i < samplesOnAxis; i++) {
+			xVar += a / (double) samplesOnAxis;
+			double zVar = 0;
+
+			for (int index = 0; index < samplesOnAxis; index++) {
+				zVar += c / (double) samplesOnAxis;
+				coord.add(new double[] { xVar, 0, zVar });
+				coord.add(new double[] { -xVar, 0, -zVar });
+			}
+		}
+	}
+	
+	private void addYAxisPoints(ArrayList<double[]> coord, int samplesOnAxis){
+		double yVar = 0;
+
+		for (int i = 0; i < samplesOnAxis; i++) {
+			yVar += b / (double) samplesOnAxis;
+			double zVar = 0;
+
+			for (int index = 0; index < samplesOnAxis; index++) {
+				zVar += c / (double) samplesOnAxis;
+				coord.add(new double[] { 0, yVar, zVar });
+				coord.add(new double[] { 0, -yVar, -zVar });
+			}
+		}
 	}
 
 	/**
@@ -432,6 +677,25 @@ public class Ellipsoid {
 
 	public String toString() {
 		return String.format("%f", this.getExactVolume());
+	}
+	
+	public void printUniformDistribution(){
+		FileWriter file = null;
+		try {
+			file = new FileWriter("Distribution");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ArrayList<double[]> coord = generateUniformDistributionOfSamplePoints();
+		
+		PrintWriter fileOut = new PrintWriter(file);
+		
+		for(int i = 0; i < coord.size(); i++){
+			fileOut.println(String.format("[%.4f, %.4f, %.4f]", 
+					coord.get(i)[x], coord.get(i)[y], coord.get(i)[z]));
+		}
+		
 	}
 
 }

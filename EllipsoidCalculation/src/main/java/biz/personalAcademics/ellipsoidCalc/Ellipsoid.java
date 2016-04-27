@@ -65,7 +65,7 @@ public class Ellipsoid {
 
 	/**
 	 * Estimates the volume of the ellipsoid using the specified number of
-	 * sample points
+	 * random sample points
 	 * 
 	 * @param sampleSize
 	 * @return
@@ -87,7 +87,7 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * Estimates the volume of the portion of the ellipsoid using 500000 sample
+	 * Estimates the volume of the portion of the ellipsoid using 5,000,000 random sample points
 	 * points
 	 * 
 	 * @return
@@ -109,6 +109,12 @@ public class Ellipsoid {
 		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
 	}
 	
+	/**
+	 * Uses a uniformly distributed set of 3 dimentional coordinates to estimate volume.
+	 * Formula for number of points is = [(number of sample points on 1 positive axis)^3] * 8.
+	 * Due to computation time, samples are limited to ~2,700,000 sample points.
+	 * @return
+	 */
 	public double getEstimatedVolumeThruUniformDistribution(){
 		int insideShape = 0;
 		ArrayList<double[]> coord = generateUniformDistributionOfSamplePoints();
@@ -128,6 +134,18 @@ public class Ellipsoid {
 		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
 	}
 
+	/**
+	 * This method can be used on both random and uniformly distributed sample points
+	 * Checks if point is between specified bounds for theta. Checks if point is between
+	 * specified bounds for phi. Checks if point is within the equation of an ellipsoid
+	 * 
+	 * fomulas:
+	 * theta:  thetaStart < thetaSample < thetaEnd
+	 * phi:  phiStart < phiSample < phiEnd
+	 * equation of ellipsoid:  (x^2/a^2) + (y^2/b^2) + (z^2/c^2) <= 1
+	 * @param coord
+	 * @return
+	 */
 	private boolean determineIfPointIsInsideShape(double[] coord) {
 		boolean insideShape = false;
 
@@ -150,10 +168,16 @@ public class Ellipsoid {
 		return insideShape;
 	}
 
+	/**
+	 * checks if sample point is inside the equation of an ellipsoid using 
+	 *  the boolean expression:  (x^2/a^2) + (y^2/b^2) + (z^2/c^2) <= 1
+	 * @param coord
+	 * @return
+	 */
 	private boolean pointInsideEquationOfEllipsoid(double[] coord) {
 		boolean insideShape = false;
 
-		// point is inside shape if x^2/a^2 + y^2/b^2 + z^2/c^2 <= 1
+		// point is inside shape if x^2/a^2 + y^2/b^2 + z^2/c^2 <= 1 then it is inside the ellipsoid
 		double valueOfPointInEllipsoidEquation = (coord[x] * coord[x])
 				/ (a * a) + (coord[y] * coord[y]) / (b * b)
 				+ (coord[z] * coord[z]) / (c * c);
@@ -165,6 +189,11 @@ public class Ellipsoid {
 		return insideShape;
 	}
 
+	/**
+	 * Checks if the phi value of sample point is >= phiStart but <= phiEnd
+	 * @param coord
+	 * @return
+	 */
 	private boolean pointBetweenPhiStartAndPhiEnd(double[] coord) {
 		boolean insidePhiBound = false;
 
@@ -180,6 +209,12 @@ public class Ellipsoid {
 		return insidePhiBound;
 	}
 
+	/**
+	 * checks if theta value of sample point is >= thetaStart but <= thetaEnd
+	 * @param coord
+	 * @return
+	 * @throws NegativeZAxisException
+	 */
 	private boolean pointBetweenThetaStartAndThetaEnd(double[] coord)
 			throws NegativeZAxisException {
 		boolean insideThetaBound = false;
@@ -197,7 +232,16 @@ public class Ellipsoid {
 		return insideThetaBound;
 	}
 
-	private double getPhiValueOfSampleCoord(double[] coord) {
+	/**
+	 * Calculates the value of phi using the formula: arcCos(z/sqrt(x^2 + y^2 + z^2)).
+	 * If z is negative, pi/2 is added to the angle. If z = 0 but x != 0 or y != 0 then
+	 * phi is pi/2. If x == 0 and y == 0 and z != 0, then phi is either 0 or pi. If 
+	 * x == 0, y == 0, z == 0, then PointOnOrigin exception is thrown.
+	 * @param coord
+	 * @return
+	 * @throws PointOnOriginException
+	 */
+	private double getPhiValueOfSampleCoord(double[] coord) throws PointOnOriginException {
 		// above xy plane (positive z value)
 		if (coord[z] > 0 && coord[x] != 0 && coord[y] != 0) {
 
@@ -267,6 +311,21 @@ public class Ellipsoid {
 
 	}
 
+	/**
+	 * Returns the values of theta in the x y plane using the formula arcTan(y/x). 
+	 * ***If point is on positive x axis then 0 is returned.***
+	 *  If point is in first quadrant then the angle is returned. If point is in second quadrant, 
+	 *  then pi/2 is added to angle. If point is in third quadrant, then pi/2 is added to angle. 
+	 *  If point is in fourth quadrant then 2pi is added to the angle. If x = 0, y = 0 and z > 0,
+	 *  then PositiveZAxisException is thrown. If x = 0, y = 0 and z < 0 then 
+	 *  NegativeArraySizeException is thrown. If x = 0, y = 0 and z = 0, then 
+	 *  PointOnOriginException is thrown.
+	 * @param coord
+	 * @return
+	 * @throws PositiveZAxisException
+	 * @throws NegativeArraySizeException
+	 * @throws PointOnOriginException
+	 */
 	private double getThetaValueOfSampleCoordStartTheta(double[] coord)
 			throws PositiveZAxisException, NegativeArraySizeException,
 			PointOnOriginException {
@@ -318,6 +377,21 @@ public class Ellipsoid {
 		}
 	}
 
+	/**
+	 * Returns the values of theta in the x y plane using the formula arcTan(y/x). 
+	 * ***If point is on positive x axis then 2pi is returned.***
+	 *  If point is in first quadrant then the angle is returned. If point is in second quadrant, 
+	 *  then pi/2 is added to angle. If point is in third quadrant, then pi/2 is added to angle. 
+	 *  If point is in fourth quadrant then 2pi is added to the angle. If x = 0, y = 0 and z > 0,
+	 *  then PositiveZAxisException is thrown. If x = 0, y = 0 and z < 0 then 
+	 *  NegativeArraySizeException is thrown. If x = 0, y = 0 and z = 0, then 
+	 *  PointOnOriginException is thrown.
+	 * @param coord
+	 * @return
+	 * @throws PositiveZAxisException
+	 * @throws NegativeArraySizeException
+	 * @throws PointOnOriginException
+	 */
 	private double getThetaValueOfSampleCoordEndTheta(double[] coord)
 			throws PositiveZAxisException, NegativeArraySizeException,
 			PointOnOriginException {
@@ -368,6 +442,10 @@ public class Ellipsoid {
 		}
 	}
 
+	/**
+	 * Returns a positive 1 or -1 randomly
+	 * @return
+	 */
 	private int getRandomNegation() {
 		boolean negativeSign = portionOfAxis.nextBoolean();
 
@@ -379,8 +457,9 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * generates a 3 dimensional sample point that lays with the first octant of
-	 * the ellipsoid Cartesian field.
+	 * generates a 3 dimensional sample point that lays somewhere within the 
+	 * three dimensional coordinate system where each axis ranges from 
+	 * x = +/- a, y = +/- b and z = +/- c
 	 * 
 	 * @return
 	 */
@@ -394,8 +473,12 @@ public class Ellipsoid {
 		return samplePoint;
 	}
 
+	/**
+	 * Returns an ArrayList<double[]> of 3D sample points of uniform distribution
+	 * @return
+	 */
 	public ArrayList<double[]> generateUniformDistributionOfSamplePoints() {
-		final int samplesOnAxis = 150;
+		final int samplesOnAxis = 50;
 
 		ArrayList<double[]> coord = new ArrayList<double[]>();
 		double xVar = 0;
@@ -445,6 +528,11 @@ public class Ellipsoid {
 
 	}
 
+	/**
+	 * Helper method for uniform distribution method. Adds points above and below the origin (z axis) to ArrayList
+	 * @param coord
+	 * @param samplesOnAxis
+	 */
 	private void addZAxisPoints(ArrayList<double[]> coord, int samplesOnAxis) {
 		double zVar = 0;
 		zVar += c / (double) samplesOnAxis;
@@ -457,6 +545,11 @@ public class Ellipsoid {
 
 	}
 
+	/**
+	 * Helper method for uniform distribution method. Adds points contained within the xy plane to the ArrayList
+	 * @param coord
+	 * @param samplesOnAxis
+	 */
 	private void addXYPlanePoints(ArrayList<double[]> coord, int samplesOnAxis) {
 		double xVar = 0;
 
@@ -481,6 +574,11 @@ public class Ellipsoid {
 		}
 	}
 
+	/**
+	 * Helper method for uniform distribution method. Adds points above and below x axis to ArrayList
+	 * @param coord
+	 * @param samplesOnAxis
+	 */
 	private void addXAxisPoints(ArrayList<double[]> coord, int samplesOnAxis) {
 		double xVar = 0;
 
@@ -496,6 +594,11 @@ public class Ellipsoid {
 		}
 	}
 	
+	/**
+	 * Helper method for uniform distribution method. Adds points above and below x axis to ArrayList
+	 * @param coord
+	 * @param samplesOnAxis
+	 */
 	private void addYAxisPoints(ArrayList<double[]> coord, int samplesOnAxis){
 		double yVar = 0;
 

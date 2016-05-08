@@ -18,14 +18,52 @@ public class EllipsoidCalcUtilityTest {
 	public ExpectedException invalidInput = ExpectedException.none();
 
 	@Test
-	public void testEstimatedVolumeCalculation(){
+	public void testEstimatedEighthVolumeCalculation(){
 		double EighthOfEllipseVolume = (1 / (double) 6) * Math.PI * 2 * 2 * 3;
-		Ellipsoid ellip = new Ellipsoid(0, (Math.PI * .5), (Math.PI * .5), 0,
+		Ellipsoid ellip = new Ellipsoid(0, (Math.PI/2), (Math.PI), Math.PI/2,
 				2, 2, 3);
 		
-		assertThat(String.format("%.2f", ellip.getEstimatedVolume(500000000)),
+		assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
 				is(String.format("%.2f", EighthOfEllipseVolume)));
 	}
+	
+	/**
+	 * Using formula for ellipsoid (1/4) * (4/3)pi(abc)
+	 */
+	@Test
+	public void testEstimatedQuarterVolumeCalculation() {
+		double quarterOfEllipseVolume = (1 / (double) 3) * Math.PI * 2 * 2 * 3;
+		Ellipsoid ellip = new Ellipsoid((Math.PI * .5), (Math.PI), Math.PI, 0, 2, 2, 3);
+		
+		assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
+				is(String.format("%.2f", quarterOfEllipseVolume)));
+	}
+
+	/**
+	 * Using formula for ellipsoid (1/2) * (4/3)pi(abc)
+	 */
+	@Test
+	public void testEstimatedHalfVolumeCalculation() {
+		double halfOfEllipseVolume = (2 / (double) 3) * Math.PI * 2 * 2 * 3;
+		Ellipsoid ellip = new Ellipsoid(0, (Math.PI), Math.PI, 0, 2, 2, 3);
+		
+		assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
+				is(String.format("%.2f", halfOfEllipseVolume)));
+	}
+
+	/**
+	 * Using formula for ellipsoid (4/3)pi(abc)
+	 */
+	@Test
+	public void testEstimatedWholehVolumeCalculation() {
+		double fullEllipseVolume = (4 / (double) 3) * Math.PI * 2 * 2 * 3;
+		Ellipsoid ellip = new Ellipsoid(0, (Math.PI * 2), Math.PI, 0, 2, 2, 3);
+		
+		assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
+				is(String.format("%.2f", fullEllipseVolume)));
+	}
+	
+	
 	
 	@Test
 	public void testConversionToDecimal() {

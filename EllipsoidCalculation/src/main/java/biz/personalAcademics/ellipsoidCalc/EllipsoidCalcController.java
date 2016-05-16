@@ -1,5 +1,6 @@
 package biz.personalAcademics.ellipsoidCalc;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -15,7 +16,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 
-public class EllipsoidCalcController {
+public class EllipsoidCalcController{
 
     @FXML
     private TextField phiStart;
@@ -66,12 +67,12 @@ public class EllipsoidCalcController {
 		setBackground();
     }
     
-    public void convertDecimal(ActionEvent e){
-    	TextField temp = (TextField) e.getSource();
+    public void convertDecimal(ActionEvent event){
+    	TextField temp = (TextField) event.getSource();
     	try {
-			temp.setText(String.format("%f", Ellipsoid.convertToDecimal(temp.getText())));
-		} catch (InvalidUserInputException e1) {
-			warningLabel.setText(String.format("Non-number '%s' detected! Fix this to proceed", e1.getMessage()));
+			temp.setText(String.format("%f", Ellipsoid.convertToDecimal(temp.getText().replaceAll(" ", ""))));
+		} catch (InvalidUserInputException e) {
+			warningLabel.setText(String.format("Non-number '%s' detected! Fix this to proceed", e.getMessage()));
 		}
     	
     }
@@ -82,37 +83,54 @@ public class EllipsoidCalcController {
     		return;
     	}
     	
-    	String startAngle = thetaStart.getText();
-    	String endAngle = thetaEnd.getText();
-    	String zAxisAngleEnd = phiEnd.getText();
-    	String zAxisAngleStart = phiStart.getText();
-    	boolean inDegrees = degreesRadio.isSelected();;
+    	String startAngle = thetaStart.getText().replaceAll(" ", "");
+    	String endAngle = thetaEnd.getText().replaceAll(" ", "");
+    	String zAxisAngleEnd = phiEnd.getText().replaceAll(" ", "");
+    	String zAxisAngleStart = phiStart.getText().replaceAll(" ", "");
+    	boolean inDegrees = degreesRadio.isSelected();
     	double aAxis = 0;
     	double bAxis = 0;
     	double cAxis = 0;
 		try {
-			aAxis = Double.parseDouble(a.getText());
-			bAxis = Double.parseDouble(b.getText());
-			cAxis = Double.parseDouble(c.getText());
+			aAxis = Double.parseDouble(a.getText().replaceAll(" ", ""));
+			bAxis = Double.parseDouble(b.getText().replaceAll(" ", ""));
+			cAxis = Double.parseDouble(c.getText().replaceAll(" ", ""));
 		} catch (NumberFormatException e1) {
 			warningLabel.setText(String.format("Non-number '%s' detected", e1.getMessage()));
 			return;
 		}
+		
+		Ellipsoid ellip = null;
+		
     	try {
 			double thetaBegin = Ellipsoid.convertThetaToRadians(startAngle, inDegrees);
 			double thetaEnd = Ellipsoid.convertThetaToRadians(endAngle, inDegrees);
 			double phiAngleEnd = Ellipsoid.convertThetaToRadians(zAxisAngleEnd, inDegrees);
 			double phiAngleStart = Ellipsoid.convertThetaToRadians(zAxisAngleStart, inDegrees);
-			
-			Ellipsoid ellip = new Ellipsoid(thetaBegin, thetaEnd, phiAngleEnd, phiAngleStart,
+						
+			ellip = new Ellipsoid(thetaBegin, thetaEnd, phiAngleEnd, phiAngleStart,
 					aAxis, bAxis, cAxis);
 			
-			volumeAnswer.setText(ellip.toString());
-		} catch (InvalidUserInputException e) {
+    	} catch (InvalidUserInputException e) {
 			warningLabel.setText(String.format("Non number '%s' Detected", e.getMessage()));
+			volumeAnswer.setText("");
+			// terminate is invalid user input is detected
 			return;
 		}
-    	
+			
+			Task task = new Task<Void>() {
+			    @Override public Void call() {
+			    	volumeAnswer.setText("Estimating: Please wait...");
+			    	return null;
+			    }
+			};
+			
+			Thread thread = new Thread(task);
+			thread.start();
+			
+			String volume = ellip.toString();
+			volumeAnswer.setText(volume);
+	    	
     }
     
     private boolean ensureAllEntriesLogged(){
@@ -156,6 +174,10 @@ public class EllipsoidCalcController {
     	return incompleteInput;
     }
     
+    private void setWaitingLabel(){
+    	volumeAnswer.setText("Executing");
+    }
+    
     private void setBackground(){
     	Image logo = new Image(EllipsoidCalcMain.class.getResourceAsStream("/resources/mathBackground.jpg"));
     	BackgroundSize logoSize = new BackgroundSize(600, 400, false, false, true, true);
@@ -164,7 +186,5 @@ public class EllipsoidCalcController {
 		 Background background = new Background(image);
 		 anchorPane.setBackground(background);
     }
-    
-    
-    
+       
 }

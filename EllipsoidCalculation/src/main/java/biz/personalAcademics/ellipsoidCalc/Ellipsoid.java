@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 public class Ellipsoid {
@@ -11,11 +13,14 @@ public class Ellipsoid {
 	private double startRadianTheta, endRadianTheta, radianMeasureOffZAxisEnd,
 			radianMeasureOffZAxisStart, a, b, c;
 
-	private int x, y, z;
+	private final int x = 0, y = 1, z = 2;
+	private final int phi = 0, theta = 1, p = 2;
+	
+	private double[] sortedAxes;
 
-	double sampleSize;
+	private double sampleSize;
 
-	Random randomGenerator;
+	private Random randomGenerator;
 
 	public Ellipsoid(double startRadianTheta, double endRadianTheta,
 			double radianMeasureOffZAxisEnd, double radianMeasureOffZAxisStart,
@@ -28,9 +33,9 @@ public class Ellipsoid {
 		this.a = a;
 		this.b = b;
 		this.c = c;
-		this.x = 0;
-		this.y = 1;
-		this.z = 2;
+		
+		sortedAxes = new double[]{a, b, c};
+		Arrays.sort(sortedAxes);
 
 		/*
 		 * the nextDouble method will be called from this object and multiplied
@@ -67,39 +72,111 @@ public class Ellipsoid {
 
 	/**
 	 * Estimates the volume of the ellipsoid using the specified number of
-	 * random sample points
+	 * random sample points and the most reliable method developed thus far
 	 * 
 	 * @param sampleSize
 	 * @return
 	 */
 	public double getEstimatedVolume(int sampleSize) {
-		int insideShape = 0;
-
-		for (int i = 0; i < sampleSize; i++) {
-			if (determineIfPointIsInsideShapeRandomDistribution(generateRandom3DSamplePoint())) {
-				insideShape++;
-			}
-
-		}
-
-		double portionOfKnownVolume = insideShape / (double) sampleSize;
-
-		// portion of volume of 3D system
-		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
+		return getEstimatedVolumeRect(sampleSize);
 	}
 
 	/**
-	 * Estimates the volume of the portion of the ellipsoid using 7,000,000
-	 * random sample points points
+	 * Estimates the volume of the portion of the ellipsoid using using the
+	 * most reliable method developed thus far
 	 * 
 	 * @return
 	 */
 	public double getEstimatedVolume() {
+		return getEstimatedVolumeRect();
+	}
+	
+	/**
+	 * creates a specified number of sample points inside a sphere using a spherical coordinate system
+	 * the sphere's volume is defined as (4/3)pi(largestAxis)^3. This method inscribes an
+	 * ellipsoid inside the sphere to compute the estimated volume. The error has
+	 * empirically been found to be as much as +/- .03
+	 * @return
+	 */
+	public double getEstimatedVolumeSphere(){
 		int insideShape = 0;
-		final int sampleSize = 7_500_000;
+		final int sampleSize = 30_000_000;
 
 		for (int i = 0; i < sampleSize; i++) {
-			if (determineIfPointIsInsideShapeRandomDistribution(generateRandom3DSamplePoint())) {
+			if (determineIfPointIsInsideShapeRandomDistributionSphere(generateRandom3DSamplePointSphere())) {
+				insideShape++;
+			}
+
+		}
+		
+		double portionOfKnownVolume = insideShape / (double) sampleSize;
+		System.out.printf("\nportion = %.3f, longest Axis = %.3f", portionOfKnownVolume, sortedAxes[2]);
+		
+		// portion of volume of 3D system
+		return portionOfKnownVolume * (4.0/3.0) * Math.PI * Math.pow(sortedAxes[2], 3);
+	}
+	
+	/**
+	 * creates 30 million sample points inside a sphere using a spherical coordinate system
+	 * the sphere's volume is defined as (4/3)pi(largestAxis)^3. This method inscribes an
+	 * ellipsoid inside the sphere to compute the estimated volume. The error has
+	 * empirically been found to be as much as +/- .03
+	 * @return
+	 */
+	public double getEstimatedVolumeSphere(int sampleSize){
+		int insideShape = 0;
+
+		for (int i = 0; i < sampleSize; i++) {
+			if (determineIfPointIsInsideShapeRandomDistributionSphere(generateRandom3DSamplePointSphere())) {
+				insideShape++;
+			}
+
+		}
+		
+		double portionOfKnownVolume = insideShape / (double) sampleSize;
+		
+		// portion of volume of 3D system
+		return portionOfKnownVolume * (4.0/3.0) * Math.PI * Math.pow(sortedAxes[2], 3);
+	}
+	
+	/**
+	 * creates 10 million sample points inside a rectangular prism using a rectangular coordinate system
+	 * the rectangular prism's volume is defined as 2a * 2b * 2c where a b and c represent the 
+	 * axes of the ellipsoid. This method inscribes an
+	 * ellipsoid inside the rectangular prism to compute the estimated volume. The error has
+	 * empirically been found to be as much as +/- .1
+	 * @return
+	 */
+	public double getEstimatedVolumeRect(){
+		int insideShape = 0;
+		final int sampleSize = 10_000_000;
+
+		for (int i = 0; i < sampleSize; i++) {
+			if (determineIfPointIsInsideShapeRandomDistributionRect(generateRandom3DSamplePointRect())) {
+				insideShape++;
+			}
+
+		}
+
+		double portionOfKnownVolume = insideShape / (double) sampleSize;
+
+		// portion of volume of 3D system
+		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
+	}
+	
+	/**
+	 * creates a specified number of sample points inside a rectangular prism using a rectangular coordinate system
+	 * the rectangular prism's volume is defined as 2a * 2b * 2c where a b and c represent the 
+	 * axes of the ellipsoid. This method inscribes an
+	 * ellipsoid inside the rectangular prism to compute the estimated volume. The error has
+	 * empirically been found to be as much as +/- .1
+	 * @return
+	 */
+	public double getEstimatedVolumeRect(int sampleSize){
+		int insideShape = 0;
+
+		for (int i = 0; i < sampleSize; i++) {
+			if (determineIfPointIsInsideShapeRandomDistributionRect(generateRandom3DSamplePointRect())) {
 				insideShape++;
 			}
 
@@ -111,6 +188,307 @@ public class Ellipsoid {
 		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
 	}
 
+
+	/**
+	 * @return the startRadianTheta
+	 */
+	public double getStartRadianTheta() {
+		return startRadianTheta;
+	}
+
+	/**
+	 * @param startRadianTheta
+	 *            the startRadianTheta to set
+	 */
+	public void setStartRadianTheta(double startRadianTheta) {
+		this.startRadianTheta = startRadianTheta;
+	}
+
+	/**
+	 * @return the endRadianTheta
+	 */
+	public double getEndRadianTheta() {
+		return endRadianTheta;
+	}
+
+	/**
+	 * @param endRadianTheta
+	 *            the endRadianTheta to set
+	 */
+	public void setEndRadianTheta(double endRadianTheta) {
+		this.endRadianTheta = endRadianTheta;
+	}
+
+	/**
+	 * @return the radianMeasureOffZAxisEnd
+	 */
+	public double getRadianMeasureOffZAxisEnd() {
+		return radianMeasureOffZAxisEnd;
+	}
+
+	/**
+	 * @param radianMeasureOffZAxisEnd
+	 *            the radianMeasureOffZAxisEnd to set
+	 */
+	public void setRadianMeasureOffZAxisEnd(double radianMeasureOffZAxisEnd) {
+		this.radianMeasureOffZAxisEnd = radianMeasureOffZAxisEnd;
+	}
+
+	/**
+	 * @return the radianMeasureOffZAxisStart
+	 */
+	public double getRadianMeasureOffZAxisStart() {
+		return radianMeasureOffZAxisStart;
+	}
+
+	/**
+	 * @param radianMeasureOffZAxisStart
+	 *            the radianMeasureOffZAxisStart to set
+	 */
+	public void setRadianMeasureOffZAxisStart(double radianMeasureOffZAxisStart) {
+		this.radianMeasureOffZAxisStart = radianMeasureOffZAxisStart;
+	}
+
+	/**
+	 * @return the a
+	 */
+	public double getA() {
+		return a;
+	}
+
+	/**
+	 * @param a
+	 *            the a to set
+	 */
+	public void setA(double a) {
+		this.a = a;
+	}
+
+	/**
+	 * @return the b
+	 */
+	public double getB() {
+		return b;
+	}
+
+	/**
+	 * @param b
+	 *            the b to set
+	 */
+	public void setB(double b) {
+		this.b = b;
+	}
+
+	/**
+	 * @return the c
+	 */
+	public double getC() {
+		return c;
+	}
+
+	/**
+	 * @param c
+	 *            the c to set
+	 */
+	public void setC(double c) {
+		this.c = c;
+	}
+
+	/**
+	 * Converts value in text to a decimal
+	 * 
+	 * @param input
+	 * @return
+	 * @throws InvalidUserInputException
+	 */
+	public static double convertToDecimal(String input)
+			throws InvalidUserInputException {
+		String[] fraction = input.split("/");
+		// Returns user input if array is not a fraction
+		if (fraction.length == 1) {
+			try {
+				return Double.parseDouble(input);
+			} catch (NumberFormatException e) {
+				throw new InvalidUserInputException(input);
+			}
+			// converts user input into a decimal if a fraction or throws
+			// invalid input exception
+		} else {
+			int[] numbers = new int[2];
+			for (int i = 0; i < fraction.length; i++) {
+				try {
+					numbers[i] = Integer.parseInt(fraction[i]);
+				} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+					throw new InvalidUserInputException(input);
+				}
+			}
+			return numbers[0] / (double) numbers[1];
+		}
+
+	}
+
+	/**
+	 * If user inputs angle in degrees, it is converted and returned in radians.
+	 * If radians were chosen, pi is multiplied in
+	 * 
+	 * @param degrees
+	 * @param degreeIsSelected
+	 * @return
+	 * @throws InvalidUserInputException
+	 */
+	public static double convertThetaToRadians(String degrees,
+			boolean degreeIsSelected) throws InvalidUserInputException {
+		double testDegree;
+
+		try {
+			testDegree = Double.parseDouble(degrees);
+		} catch (NumberFormatException e1) {
+
+			// if in fraction form, it is converted to decimal, otherwise
+			// invalidUserInputException is thrown
+			testDegree = Ellipsoid
+					.convertToDecimal(degrees.replaceAll(" ", ""));
+		}
+
+		if (degreeIsSelected) {
+			return (testDegree / 180) * (Math.PI);
+		} else {
+			return testDegree * Math.PI;
+		}
+	}
+
+	/**
+	 * This method will return the estimated volume of the shape through random
+	 * sample points rounded to two decimal places.
+	 */
+	public String toString() {
+		return String.format("%.2f +/- .05", this.getEstimatedVolume());
+	}
+	
+	//-------------------Random Dist. Sphere---------------------------------
+	
+	/**
+	 * This method can only be used for Spherical coordinates. Checks if point is
+	 * between specified bounds for phi. Checks if point is within the equation
+	 * of an ellipsoid. 
+	 * 
+	 * fomulas: theta: thetaStart < thetaSample < thetaEnd phi: phiStart <
+	 * phiSample < phiEnd equation of ellipsoid: (x^2/a^2) + (y^2/b^2) +
+	 * (z^2/c^2) <= 1
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean determineIfPointIsInsideShapeRandomDistributionSphere(
+			double[] coord) {
+
+		boolean insideShape = false;
+
+		if (pointInsideEquationOfEllipsoidSphere(coord)
+				&& pointBetweenPhiStartAndPhiEndSphere(coord)
+				&& pointBetweenThetaStartAndThetaEndRandomDistSphere(coord)) {
+			insideShape = true;
+		}
+
+		return insideShape;
+	}
+	
+	/**
+	 * Checks if the phi value of sample point is >= phiStart but <= phiEnd
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean pointBetweenPhiStartAndPhiEndSphere(double[] coord) {
+		boolean insidePhiBound = false;
+
+			if (radianMeasureOffZAxisStart <= coord[phi]
+					&& coord[phi] <= radianMeasureOffZAxisEnd) {
+
+				insidePhiBound = true;
+			}
+		
+		return insidePhiBound;
+	}
+
+	/**
+	 * checks if theta value of sample point is > thetaStart but < thetaEnd.
+	 * Randomly decides whether or not to include special cases.
+	 * 
+	 * @param coord
+	 * @return
+	 * @throws NegativeZAxisException
+	 */
+	private boolean pointBetweenThetaStartAndThetaEndRandomDistSphere(double[] coord) {
+		boolean insideThetaBound = false;
+
+			if (startRadianTheta <= coord[theta]
+					&& coord[theta] <= endRadianTheta) {
+
+				insideThetaBound = true;
+			}
+		
+
+		return insideThetaBound;
+	}
+	
+	/**
+	 * checks if sample point is inside the equation of an ellipsoid using the
+	 * boolean expression: 
+	 * ((psin(phi)cos(theta))^2/a^2) + ((psin(phi)cos(theta))^2/b^2) + 
+	 * ((pcos(phi))^2/c^2) <= 1
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean pointInsideEquationOfEllipsoidSphere(double[] coord) {
+		boolean insideShape = false;
+		
+		double xSquared = Math.pow((coord[p] * Math.sin(coord[phi]) * Math.cos(coord[theta])), 2);
+		double ySquared = Math.pow((coord[p] * Math.sin(coord[phi]) * Math.sin(coord[theta])), 2);
+		double zSquared = Math.pow((coord[p] * Math.cos(coord[phi])), 2);
+		
+		/*
+		
+		point is inside shape if ((p * sin(phi)cos(theta))^2/a^2) + ((p * sin(phi)cos(theta))^2/b^2)
+	 	+ ((p * cos(phi))^2/c^2) <= 1 then it is inside the ellipsoid
+		 
+		*/
+		double valueOfPointInEllipsoidEquation = (xSquared)
+				/ (a * a) + (ySquared) / (b * b)
+				+ (zSquared) / (c * c);
+
+		if (valueOfPointInEllipsoidEquation <= 1) {
+			insideShape = true;
+		}
+
+		return insideShape;
+	}
+	
+	/**
+	 * generates a 3 dimensional sample point using spherical coordinates
+	 * that lies somewhere inside the sphere (4/3)pi(r^2) where r is the 
+	 * longest axis
+	 * 
+	 * @return
+	 */
+	private double[] generateRandom3DSamplePointSphere() {
+		double[] samplePoint = new double[3];
+
+		// phi ranges from 0 to pi
+		samplePoint[phi] = Math.PI * randomGenerator.nextDouble();
+		
+		// theta ranges from 0 to 2pi
+		samplePoint[theta] = 2 * Math.PI * randomGenerator.nextDouble();
+		
+		// p ranges from 0 to the longest axis
+		samplePoint[p] = sortedAxes[2] * randomGenerator.nextDouble();
+
+		return samplePoint;
+	}
+
+	
+	//--------------------Random Dist. Rectangular Prism----------------------
 	
 	/**
 	 * This method can be used on uniformly distributed sample points. For
@@ -127,14 +505,14 @@ public class Ellipsoid {
 	 * @param coord
 	 * @return
 	 */
-	private boolean determineIfPointIsInsideShapeRandomDistribution(
+	private boolean determineIfPointIsInsideShapeRandomDistributionRect(
 			double[] coord) {
 
 		boolean insideShape = false;
 
-		if (pointInsideEquationOfEllipsoid(coord)
-				&& pointBetweenPhiStartAndPhiEnd(coord)
-				&& pointBetweenThetaStartAndThetaEndRandomDist(coord)) {
+		if (pointInsideEquationOfEllipsoidRect(coord)
+				&& pointBetweenPhiStartAndPhiEndRect(coord)
+				&& pointBetweenThetaStartAndThetaEndRandomDistRect(coord)) {
 			insideShape = true;
 		}
 
@@ -148,7 +526,7 @@ public class Ellipsoid {
 	 * @param coord
 	 * @return
 	 */
-	private boolean pointInsideEquationOfEllipsoid(double[] coord) {
+	private boolean pointInsideEquationOfEllipsoidRect(double[] coord) {
 		boolean insideShape = false;
 
 		// point is inside shape if x^2/a^2 + y^2/b^2 + z^2/c^2 <= 1 then it is
@@ -170,7 +548,7 @@ public class Ellipsoid {
 	 * @param coord
 	 * @return
 	 */
-	private boolean pointBetweenPhiStartAndPhiEnd(double[] coord)
+	private boolean pointBetweenPhiStartAndPhiEndRect(double[] coord)
 			throws PointOnEdgeException {
 		boolean insidePhiBound = false;
 
@@ -202,7 +580,7 @@ public class Ellipsoid {
 	 * @return
 	 * @throws NegativeZAxisException
 	 */
-	private boolean pointBetweenThetaStartAndThetaEndRandomDist(double[] coord) {
+	private boolean pointBetweenThetaStartAndThetaEndRandomDistRect(double[] coord) {
 		boolean insideThetaBound = false;
 
 		try {
@@ -221,7 +599,6 @@ public class Ellipsoid {
 		return insideThetaBound;
 	}
 
-	
 	/**
 	 * Calculates the value of phi using the formula: arcCos(z/sqrt(x^2 + y^2 +
 	 * z^2)). If z is negative, pi/2 is added to the angle. If z = 0 but x != 0
@@ -472,7 +849,7 @@ public class Ellipsoid {
 	 * 
 	 * @return
 	 */
-	private double[] generateRandom3DSamplePoint() {
+	private double[] generateRandom3DSamplePointRect() {
 		double[] samplePoint = new double[3];
 
 		samplePoint[x] = a * randomGenerator.nextDouble() * getRandomNegation();
@@ -482,181 +859,8 @@ public class Ellipsoid {
 		return samplePoint;
 	}
 
-	
 
-	/**
-	 * @return the startRadianTheta
-	 */
-	public double getStartRadianTheta() {
-		return startRadianTheta;
-	}
-
-	/**
-	 * @param startRadianTheta
-	 *            the startRadianTheta to set
-	 */
-	public void setStartRadianTheta(double startRadianTheta) {
-		this.startRadianTheta = startRadianTheta;
-	}
-
-	/**
-	 * @return the endRadianTheta
-	 */
-	public double getEndRadianTheta() {
-		return endRadianTheta;
-	}
-
-	/**
-	 * @param endRadianTheta
-	 *            the endRadianTheta to set
-	 */
-	public void setEndRadianTheta(double endRadianTheta) {
-		this.endRadianTheta = endRadianTheta;
-	}
-
-	/**
-	 * @return the radianMeasureOffZAxisEnd
-	 */
-	public double getRadianMeasureOffZAxisEnd() {
-		return radianMeasureOffZAxisEnd;
-	}
-
-	/**
-	 * @param radianMeasureOffZAxisEnd
-	 *            the radianMeasureOffZAxisEnd to set
-	 */
-	public void setRadianMeasureOffZAxisEnd(double radianMeasureOffZAxisEnd) {
-		this.radianMeasureOffZAxisEnd = radianMeasureOffZAxisEnd;
-	}
-
-	/**
-	 * @return the radianMeasureOffZAxisStart
-	 */
-	public double getRadianMeasureOffZAxisStart() {
-		return radianMeasureOffZAxisStart;
-	}
-
-	/**
-	 * @param radianMeasureOffZAxisStart
-	 *            the radianMeasureOffZAxisStart to set
-	 */
-	public void setRadianMeasureOffZAxisStart(double radianMeasureOffZAxisStart) {
-		this.radianMeasureOffZAxisStart = radianMeasureOffZAxisStart;
-	}
-
-	/**
-	 * @return the a
-	 */
-	public double getA() {
-		return a;
-	}
-
-	/**
-	 * @param a
-	 *            the a to set
-	 */
-	public void setA(double a) {
-		this.a = a;
-	}
-
-	/**
-	 * @return the b
-	 */
-	public double getB() {
-		return b;
-	}
-
-	/**
-	 * @param b
-	 *            the b to set
-	 */
-	public void setB(double b) {
-		this.b = b;
-	}
-
-	/**
-	 * @return the c
-	 */
-	public double getC() {
-		return c;
-	}
-
-	/**
-	 * @param c
-	 *            the c to set
-	 */
-	public void setC(double c) {
-		this.c = c;
-	}
-
-	/**
-	 * Converts value in text to a decimal
-	 * 
-	 * @param input
-	 * @return
-	 * @throws InvalidUserInputException
-	 */
-	public static double convertToDecimal(String input)
-			throws InvalidUserInputException {
-		String[] fraction = input.split("/");
-		// Returns user input if array is not a fraction
-		if (fraction.length == 1) {
-			try {
-				return Double.parseDouble(input);
-			} catch (NumberFormatException e) {
-				throw new InvalidUserInputException(input);
-			}
-			// converts user input into a decimal if a fraction or throws
-			// invalid input exception
-		} else {
-			int[] numbers = new int[2];
-			for (int i = 0; i < fraction.length; i++) {
-				try {
-					numbers[i] = Integer.parseInt(fraction[i]);
-				} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-					throw new InvalidUserInputException(input);
-				}
-			}
-			return numbers[0] / (double) numbers[1];
-		}
-
-	}
-
-	/**
-	 * If user inputs angle in degrees, it is converted and returned in radians.
-	 * If radians were chosen, pi is multiplied in
-	 * 
-	 * @param degrees
-	 * @param degreeIsSelected
-	 * @return
-	 * @throws InvalidUserInputException
-	 */
-	public static double convertThetaToRadians(String degrees,
-			boolean degreeIsSelected) throws InvalidUserInputException {
-		double testDegree;
-
-		try {
-			testDegree = Double.parseDouble(degrees);
-		} catch (NumberFormatException e1) {
-			throw new InvalidUserInputException(degrees);
-		}
-
-		if (degreeIsSelected) {
-			return (testDegree / 180) * (Math.PI);
-		} else {
-			return testDegree * Math.PI;
-		}
-	}
-
-	/**
-	 * This method will return the estimated volume of the shape through random
-	 * sample points rounded to two decimal places.
-	 */
-	public String toString() {
-		return String.format("%.2f +/- .01", this.getEstimatedVolume());
-	}
-	
-//-----------------------------------Uniform distribution Monte Carlo--------------------------
+	// --------------------Uniform distribution Monte Carlo--------------------
 	/**
 	 * Uses a uniformly distributed set of 3 dimentional coordinates to estimate
 	 * volume. Formula for number of points is = [(number of sample points on 1
@@ -691,8 +895,9 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * Maintenance method for testing 'generateUniformDistributionOfSamplePoints' method
-	 * Method prints a file containing all the generated sample points
+	 * Maintenance method for testing
+	 * 'generateUniformDistributionOfSamplePoints' method Method prints a file
+	 * containing all the generated sample points
 	 */
 	public void printUniformDistribution() {
 		FileWriter file = null;
@@ -712,7 +917,7 @@ public class Ellipsoid {
 		}
 
 	}
-	
+
 	/**
 	 * This method can be used on uniformly distributed sample points. For
 	 * random distribution use 'determineIfPointIsInsideShapeRandomDistribution'
@@ -735,8 +940,8 @@ public class Ellipsoid {
 		boolean insideShape = false;
 
 		try {
-			if (pointInsideEquationOfEllipsoid(coord)
-					&& pointBetweenPhiStartAndPhiEnd(coord)
+			if (pointInsideEquationOfEllipsoidRect(coord)
+					&& pointBetweenPhiStartAndPhiEndRect(coord)
 					&& pointBetweenThetaStartAndThetaEndEvenDist(coord)) {
 				insideShape = true;
 			}
@@ -752,7 +957,7 @@ public class Ellipsoid {
 
 		return insideShape;
 	}
-	
+
 	/**
 	 * checks if theta value of sample point is > thetaStart but < thetaEnd. If
 	 * theta is == to startTheta or == to endTheta, a PointOnEdgeException is
@@ -785,7 +990,7 @@ public class Ellipsoid {
 
 		return insideThetaBound;
 	}
-	
+
 	/**
 	 * Returns an ArrayList<double[]> of 3D sample points of uniform
 	 * distribution
@@ -948,9 +1153,8 @@ public class Ellipsoid {
 			}
 		}
 	}
-	
-	
-//---------------------------Tiny Volumes---------------------------
+
+	// ---------------------------Tiny Volumes---------------------------
 	/**
 	 * Uses a uniformly distributed set of 3 dimensional coordinates to estimate
 	 * volume. Formula for number of points is = [(number of sample points on 1
@@ -960,7 +1164,7 @@ public class Ellipsoid {
 	 * @return
 	 */
 	public double getEstimatedVolumeThruUniformDistributionTinyVolumesSum() {
-		
+
 		ArrayList<double[]> coord = generateUniformDistributionOfSamplePoints();
 
 		double rectangularPrisimVolume = this.a / this.sampleSize * this.b
@@ -969,7 +1173,8 @@ public class Ellipsoid {
 
 		for (int i = 0; i < coord.size(); i++) {
 			try {
-				if (determineIfPointIsInsideShapeNonRandomDistribution(coord.get(i))) {
+				if (determineIfPointIsInsideShapeNonRandomDistribution(coord
+						.get(i))) {
 					shapeVolume += rectangularPrisimVolume;
 				}
 			} catch (PointOnEdgeException | PositiveZAxisException e) {
@@ -978,7 +1183,6 @@ public class Ellipsoid {
 
 		}
 
-		
 		// portion of volume of 3D system
 		return shapeVolume;
 	}

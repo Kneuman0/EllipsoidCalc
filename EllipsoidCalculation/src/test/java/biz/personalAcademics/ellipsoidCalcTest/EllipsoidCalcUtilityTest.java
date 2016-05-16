@@ -6,82 +6,249 @@ import static org.hamcrest.CoreMatchers.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.objenesis.instantiator.basic.AccessibleInstantiator;
-
-import java.lang.reflect.AccessibleObject;
 
 import biz.personalAcademics.ellipsoidCalc.*;
 
 public class EllipsoidCalcUtilityTest {
+	
+	private final boolean testRectangularRandomDist = false;
+	private final boolean testSphericalRandomDist = true;
+	private final boolean testMonteCarloUniformDist = false;
+	private final double A =  3, B = 3, C = 2.9;
 
 	@Rule
 	public ExpectedException invalidInput = ExpectedException.none();
-
+	
+//---------------------Random Dist. Sphere--------------------------------
+	
 	@Test
-	public void testEstimatedEighthVolumeCalculation(){
-		double EighthOfEllipseVolume = (1 / (double) 6) * Math.PI * 2 * 2 * 3;
-		Ellipsoid ellip = new Ellipsoid(0, (Math.PI/2), (Math.PI), Math.PI/2,
-				2, 2, 3);
+	public void testEstimatedEighthVolumeCalculationRandomSphere(){
 		
-		assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
-				is(String.format("%.2f", EighthOfEllipseVolume)));
+		if(testSphericalRandomDist){
+		
+			double EighthOfEllipseVolume = (1 / (double) 6) * Math.PI * A * B * C;
+			Ellipsoid ellip = new Ellipsoid(0, (.5 * Math.PI), (Math.PI/2), 0,
+					A, B, C);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeSphere()),
+					is(String.format("%.2f", EighthOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}
 	}
 	
 	/**
 	 * Using formula for ellipsoid (1/4) * (4/3)pi(abc)
 	 */
 	@Test
-	public void testEstimatedQuarterVolumeCalculation() {
-		double quarterOfEllipseVolume = (1 / (double) 3) * Math.PI * 2 * 2 * 3;
-		Ellipsoid ellip = new Ellipsoid((Math.PI * .5), (Math.PI), Math.PI, 0, 2, 2, 3);
+	public void testEstimatedQuarterVolumeCalculationRandomSphere() {
 		
-		assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
-				is(String.format("%.2f", quarterOfEllipseVolume)));
+		if(testSphericalRandomDist){
+			double quarterOfEllipseVolume = (1 / (double) 3) * Math.PI * A * B * C;
+			Ellipsoid ellip = new Ellipsoid((0), (Math.PI/2), Math.PI, 0, A, B, C);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeSphere()),
+					is(String.format("%.2f", quarterOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}
 	}
 
 	/**
 	 * Using formula for ellipsoid (1/2) * (4/3)pi(abc)
 	 */
 	@Test
-	public void testEstimatedHalfVolumeCalculation() {
-		double halfOfEllipseVolume = (2 / (double) 3) * Math.PI * 2 * 2 * 3;
-		Ellipsoid ellip = new Ellipsoid(0, (Math.PI), Math.PI, 0, 2, 2, 3);
+	public void testEstimatedHalfVolumeCalculationRandomSphere() {
 		
-		assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
-				is(String.format("%.2f", halfOfEllipseVolume)));
+		if(testSphericalRandomDist){
+			double halfOfEllipseVolume = (2 / (double) 3) * Math.PI * A * B * C;
+			Ellipsoid ellip = new Ellipsoid(0, (Math.PI), Math.PI, 0, A, B, C);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeSphere()),
+					is(String.format("%.2f", halfOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}
 	}
 
 	/**
 	 * Using formula for ellipsoid (4/3)pi(abc)
 	 */
 	@Test
-	public void testEstimatedWholehVolumeCalculation() {
-		double fullEllipseVolume = (4 / (double) 3) * Math.PI * 2 * 2 * 3;
-		Ellipsoid ellip = new Ellipsoid(0, (Math.PI * 2), Math.PI, 0, 2, 2, 3);
+	public void testEstimatedWholehVolumeCalculationRandomSphere() {
 		
-		assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
-				is(String.format("%.2f", fullEllipseVolume)));
+		if(testSphericalRandomDist){
+			double fullEllipseVolume = (4 / (double) 3) * Math.PI * A * B * C;
+			Ellipsoid ellip = new Ellipsoid(0, (Math.PI * 2), Math.PI, 0, A, B, C);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeSphere()),
+					is(String.format("%.2f", fullEllipseVolume)));
+			
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}	
 	}
 	
+//---------------------Random Dist. Rectangular Prism-----------------------
+	@Test
+	public void testEstimatedEighthVolumeCalculationRandomRect(){
+		
+		if(testRectangularRandomDist){
+			double EighthOfEllipseVolume = (1 / (double) 6) * Math.PI * 10 * 2 * 2;
+			Ellipsoid ellip = new Ellipsoid(0, (Math.PI/2), (Math.PI), Math.PI/2,
+					10, 2, 2);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeRect()),
+					is(String.format("%.2f", EighthOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}	
+	}
 	
+	/**
+	 * Using formula for ellipsoid (1/4) * (4/3)pi(abc)
+	 */
+	@Test
+	public void testEstimatedQuarterVolumeCalculationRandomRect() {
+		
+		if(testRectangularRandomDist){
+			double quarterOfEllipseVolume = (1 / (double) 3) * Math.PI * 10 * 2 * 2;
+			Ellipsoid ellip = new Ellipsoid((Math.PI * .5), (Math.PI), Math.PI, 0, 10, 2, 2);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeRect()),
+					is(String.format("%.2f", quarterOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}	
+	}
+
+	/**
+	 * Using formula for ellipsoid (1/2) * (4/3)pi(abc)
+	 */
+	@Test
+	public void testEstimatedHalfVolumeCalculationRandomRect() {
+		
+		if(testRectangularRandomDist){
+			double halfOfEllipseVolume = (2 / (double) 3) * Math.PI * 10 * 2 * 2;
+			Ellipsoid ellip = new Ellipsoid(0, (Math.PI), Math.PI, 0, 10, 2, 2);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeRect()),
+					is(String.format("%.2f", halfOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}	
+	}
+
+	/**
+	 * Using formula for ellipsoid (4/3)pi(abc)
+	 */
+	@Test
+	public void testEstimatedWholehVolumeCalculationRandomRect() {
+		
+		if(testRectangularRandomDist){
+			double fullEllipseVolume = (4 / (double) 3) * Math.PI * 10 * 2 * 2;
+			Ellipsoid ellip = new Ellipsoid(0, (Math.PI * 2), Math.PI, 0, 10, 2, 2);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeRect()),
+					is(String.format("%.2f", fullEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}
+	}
 	
+//------------------Uniform (equally spaced) dist------------------
 	@Test
-	public void testConversionToDecimal() {
-		assertThat(Ellipsoid.convertToDecimal("3/4"), is(.75));
+	public void testEstimatedEighthVolumeCalculationUniformDist(){
+		
+		if(testMonteCarloUniformDist){
+			double EighthOfEllipseVolume = (1 / (double) 6) * Math.PI * 2 * 2 * 3;
+			Ellipsoid ellip = new Ellipsoid(0, (Math.PI/2), (Math.PI), Math.PI/2,
+					2, 2, 3);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
+					is(String.format("%.2f", EighthOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}
+	}
+	
+	/**
+	 * Using formula for ellipsoid (1/4) * (4/3)pi(abc)
+	 */
+	@Test
+	public void testEstimatedQuarterVolumeCalculationUniformDist() {
+		
+		if(testMonteCarloUniformDist){
+			double quarterOfEllipseVolume = (1 / (double) 3) * Math.PI * 2 * 2 * 3;
+			Ellipsoid ellip = new Ellipsoid((Math.PI * .5), (Math.PI), Math.PI, 0, 2, 2, 3);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
+					is(String.format("%.2f", quarterOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}
 	}
 
+	/**
+	 * Using formula for ellipsoid (1/2) * (4/3)pi(abc)
+	 */
 	@Test
-	public void testConversionToRadiansCalculation() {
-		assertThat(Ellipsoid.convertThetaToRadians("180", true), is(Math.PI));
+	public void testEstimatedHalfVolumeCalculationUniformDist() {
+		
+		if(testMonteCarloUniformDist){
+			double halfOfEllipseVolume = (2 / (double) 3) * Math.PI * 2 * 2 * 3;
+			Ellipsoid ellip = new Ellipsoid(0, (Math.PI), Math.PI, 0, 2, 2, 3);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
+					is(String.format("%.2f", halfOfEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}
 	}
 
+	/**
+	 * Using formula for ellipsoid (4/3)pi(abc)
+	 */
 	@Test
-	public void testConversionToRadiansForInvalidUserInput() {
-		invalidInput.expect(InvalidUserInputException.class);
-		invalidInput.expectMessage(containsString("abcd"));
-		Ellipsoid.convertThetaToRadians("abcd", true);
+	public void testEstimatedWholehVolumeCalculationUniformDist() {
+		
+		if(testMonteCarloUniformDist){
+			double fullEllipseVolume = (4 / (double) 3) * Math.PI * 2 * 2 * 3;
+			Ellipsoid ellip = new Ellipsoid(0, (Math.PI * 2), Math.PI, 0, 2, 2, 3);
+		
+			assertThat(String.format("%.2f", ellip.getEstimatedVolumeThruUniformDistributionMonteCarlo()),
+					is(String.format("%.2f", fullEllipseVolume)));
+		}else{
+			// if not testing, test returns true
+			assert(true);
+			
+		}
 	}
-
+	
+//------------------------Exact Volume---------------------------
+	
 	/**
 	 * Using formula for ellipsoid (1/8) * (4/3)pi(abc)
 	 */
@@ -129,6 +296,26 @@ public class EllipsoidCalcUtilityTest {
 		
 		assertThat(String.format("%.13f", ellip.getExactVolume()),
 				is(String.format("%.13f", fullEllipseVolume)));
+	}
+	
+//--------------------------Other tests---------------------------
+	
+	
+	@Test
+	public void testConversionToDecimal() {
+		assertThat(Ellipsoid.convertToDecimal("3/4"), is(.75));
+	}
+
+	@Test
+	public void testConversionToRadiansCalculation() {
+		assertThat(Ellipsoid.convertThetaToRadians("180", true), is(Math.PI));
+	}
+
+	@Test
+	public void testConversionToRadiansForInvalidUserInput() {
+		invalidInput.expect(InvalidUserInputException.class);
+		invalidInput.expectMessage(containsString("abcd"));
+		Ellipsoid.convertThetaToRadians("abcd", true);
 	}
 
 }

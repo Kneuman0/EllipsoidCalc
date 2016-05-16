@@ -7,7 +7,7 @@ To run the application, navigate to the class named EllipsoidCalcMain and run it
 
 If you'd like to review the math, navigate to the Documentation and Notes on Math folder.
 
-The best order to view the documents in is:
+The best order to view the documents (Documentation and Notes on Math folder):
 
 	1) Algorithm breakdown for Kelly and Alan
 	2) How to Arrive at the Determinant of the Jacobian

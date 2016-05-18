@@ -15,7 +15,7 @@ public class EllipsoidCalcUtilityTest {
 	private final boolean testSphericalRandomDist = true;
 	private final boolean testMonteCarloUniformDist = false;
 	private final boolean testCylindricalRandomDist = false;
-	private final double A =  3, B = 1, C = 2;
+	private final double A =  2, B = 1, C = 1;
 
 	@Rule
 	public ExpectedException invalidInput = ExpectedException.none();

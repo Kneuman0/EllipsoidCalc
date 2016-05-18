@@ -1,5 +1,7 @@
 package biz.personalAcademics.ellipsoidCalc;
 
+import javax.swing.JOptionPane;
+
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -65,6 +67,7 @@ public class EllipsoidCalcController{
     	Image image = new Image(EllipsoidCalcMain.class.getResourceAsStream("/resources/PcoordinatesImage.jpg"));
 		diagramImage.setImage(image);
 		setBackground();
+		presentProgramInformationToUser();
     }
     
     public void convertDecimal(ActionEvent event){
@@ -118,15 +121,15 @@ public class EllipsoidCalcController{
 			return;
 		}
 			
-			Task task = new Task<Void>() {
-			    @Override public Void call() {
-			    	volumeAnswer.setText("Estimating: Please wait...");
-			    	return null;
-			    }
-			};
-			
-			Thread thread = new Thread(task);
-			thread.start();
+//			Task task = new Task<Void>() {
+//			    @Override public Void call() {
+//			    	volumeAnswer.setText("Estimating: Please wait...");
+//			    	return null;
+//			    }
+//			};
+//			
+//			Thread thread = new Thread(task);
+//			thread.start();
 			
 			String volume = ellip.toString();
 			volumeAnswer.setText(volume);
@@ -185,6 +188,14 @@ public class EllipsoidCalcController{
 				 BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, logoSize);
 		 Background background = new Background(image);
 		 anchorPane.setBackground(background);
+    }
+    
+    private void presentProgramInformationToUser(){
+		String sphericalCoordinatesWarning = "This program requires that you have a basic understanding\nof"
+				+ " ellipsoids and spherical coordinates"; 
+		String axisWarning = "the a axis is associated with the x axis,\nthe b axis is associated with the y axis,\n"
+				+ "and the c axis is associated with the z axis.";
+		JOptionPane.showMessageDialog(null, String.format("%s\n\n%s", sphericalCoordinatesWarning, axisWarning ));
     }
        
 }

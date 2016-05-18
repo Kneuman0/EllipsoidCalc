@@ -13,8 +13,11 @@ public class Ellipsoid {
 	private double startRadianTheta, endRadianTheta, radianMeasureOffZAxisEnd,
 			radianMeasureOffZAxisStart, a, b, c;
 
+	// rectangular and cylindrical coordinate indexes
 	private final int x = 0, y = 1, z = 2;
+	// spherical and cylindrical coordinate indexes
 	private final int phi = 0, theta = 1, p = 2;
+	// cylindrical coordinate indexes
 	private final int r = 0;
 
 	private double[] sortedAxes;
@@ -86,12 +89,26 @@ public class Ellipsoid {
 	public double getEstimatedVolume() {
 		double eccentricity = (this.c / this.a) + (this.b / this.a);
 		
-		if(eccentricity >= 1){
-			return getEstimatedVolumeSphere();
-		}else{
-			return getEstimatedVolumeRect();
-		}
+		double radianSum = radianMeasureOffZAxisEnd + radianMeasureOffZAxisStart + startRadianTheta + endRadianTheta;
 		
+		if(radianSum % Math.PI/2 == 0 || eccentricity == 2){
+			
+			return getExactVolume();
+			
+		}else{
+			
+			if(eccentricity >= 1){
+				
+				return getEstimatedVolumeSphere();
+				
+			}else{
+				
+				return getEstimatedVolumeRect();
+				
+			}
+			
+		}
+			
 	}
 
 	// --------------------------Monte Carlo Estimations---------------------

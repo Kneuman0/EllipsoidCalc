@@ -15,6 +15,7 @@ public class Ellipsoid {
 
 	private final int x = 0, y = 1, z = 2;
 	private final int phi = 0, theta = 1, p = 2;
+	private final int r = 0;
 	
 	private double[] sortedAxes;
 
@@ -91,6 +92,24 @@ public class Ellipsoid {
 		return getEstimatedVolumeRect();
 	}
 	
+	public double getEstimatedVolumeCylinder(){
+		int insideShape = 0;
+		final int sampleSize = 5_000_000;
+
+		for (int i = 0; i < sampleSize; i++) {
+			if (pointInsideShapeCyl(generate3DSamplePointCyl())) {
+				insideShape++;
+			}
+
+		}
+		
+		double portionOfKnownVolume = insideShape / (double) sampleSize;
+		System.out.printf("\nportion = %.3f, longest Axis = %.3f", portionOfKnownVolume, sortedAxes[2]);
+		
+		// portion of volume of 3D system V = (pi)(h)(r^2)
+		return portionOfKnownVolume * Math.PI * Math.pow(getLongestAxis(), 2) * 2 * this.c;
+	}
+	
 	/**
 	 * creates a specified number of sample points inside a sphere using a spherical coordinate system
 	 * the sphere's volume is defined as (4/3)pi(largestAxis)^3. This method inscribes an
@@ -100,7 +119,7 @@ public class Ellipsoid {
 	 */
 	public double getEstimatedVolumeSphere(){
 		int insideShape = 0;
-		final int sampleSize = 30_000_000;
+		final int sampleSize = 10_000_000;
 
 		for (int i = 0; i < sampleSize; i++) {
 			if (determineIfPointIsInsideShapeRandomDistributionSphere(generateRandom3DSamplePointSphere())) {
@@ -326,6 +345,10 @@ public class Ellipsoid {
 		}
 
 	}
+	
+	private double getLongestAxis(){
+		return sortedAxes[2];
+	}
 
 	/**
 	 * If user inputs angle in degrees, it is converted and returned in radians.
@@ -363,6 +386,127 @@ public class Ellipsoid {
 	 */
 	public String toString() {
 		return String.format("%.2f +/- .05", this.getEstimatedVolume());
+	}
+	
+	//-------------------Random Dist. Cylinder------------------------------
+	
+	private boolean pointInsideShapeCyl(double[] coord){
+		
+		if(checkIfThetaIsBetweenStartAndEndCyl(coord) &&
+				pointBetweenPhiValuesCyl(coord) &&
+				pointInsideEquationOfEllipsoidCyl(coord) &&
+				checkLengthOfR(coord)){
+			
+			return true;
+			
+		}else{
+			
+			return false;
+		}
+	}
+	
+	private boolean checkLengthOfR(double[] coord){
+		double numerator = this.a * this.b;
+		
+		// ( b^2 cos^2(theta) + a^2 sin^2(theta) )^(1/2)
+		double denominator = Math.sqrt(Math.pow(this.b * Math.cos(coord[theta]), 2)
+				+ Math.pow(this.a * Math.sin(coord[theta]), 2) );
+		double rValue = numerator / denominator;
+		
+		return coord[r] <= rValue;
+		
+	}
+	
+	private boolean pointInsideEquationOfEllipsoidCyl(double[] coord){
+		double xValue = Math.pow((coord[r] * Math.cos(coord[theta])) / this.a, 2);
+		double yValue = Math.pow((coord[r] * Math.sin(coord[theta])) / this.b, 2);
+		double zValue = Math.pow(coord[z]/this.c, 2);
+		
+		double pointValue = xValue + yValue + zValue;
+		
+		if(pointValue <= 1){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	private boolean pointBetweenPhiValuesCyl(double[] coord){
+		
+		if(checkThatZMoreThanPhiLineEnd(coord) && 
+				checkThatZLessThanPhiLineStart(coord)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	private boolean checkThatZMoreThanPhiLineEnd(double[] coord){
+		if(radianMeasureOffZAxisEnd == Math.PI){
+			
+			return true;
+		}else{
+			
+			double phiValue = ( Math.cos(radianMeasureOffZAxisEnd) /
+					Math.sin(radianMeasureOffZAxisEnd) ) * coord[r];
+			
+			if(phiValue <= coord[z]){
+				
+				return true;
+				
+			}else{
+				
+				return false;
+			}
+		}
+	}
+	
+	
+	private boolean checkThatZLessThanPhiLineStart(double[] coord){
+		if(radianMeasureOffZAxisStart == 0){
+			
+			return true;
+		}else{
+			
+			double phiValue = ( Math.cos(radianMeasureOffZAxisStart) /
+					Math.sin(radianMeasureOffZAxisStart) ) * coord[r];
+			
+			if(coord[z] <= phiValue){
+				
+				return true;
+				
+			}else{
+				
+				return false;
+			}
+		}
+	}
+	
+	private boolean checkIfThetaIsBetweenStartAndEndCyl(double[] coord){
+		boolean insideThetaBound = false;
+
+		if (startRadianTheta <= coord[theta]
+				&& coord[theta] <= endRadianTheta) {
+
+			insideThetaBound = true;
+		}
+	
+		return insideThetaBound;
+	}
+	
+	private double[] generate3DSamplePointCyl(){
+		double[] samplePoint = new double[3];
+		
+		// r will range from 0 to the longest axis
+		samplePoint[r] = getLongestAxis() * Math.sqrt(randomGenerator.nextDouble());
+						
+		// theta will range 0 to 2pi
+		samplePoint[theta] = 2 * Math.PI * randomGenerator.nextDouble();
+		
+		// z will range from 0 to the c axis both above and below the xy plane
+		samplePoint[z] = this.c * randomGenerator.nextDouble() * getRandomNegation();
+		
+		return samplePoint;		
 	}
 	
 	//-------------------Random Dist. Sphere---------------------------------
@@ -476,13 +620,13 @@ public class Ellipsoid {
 		double[] samplePoint = new double[3];
 
 		// phi ranges from 0 to pi
-		samplePoint[phi] = Math.PI * randomGenerator.nextDouble();
+		samplePoint[phi] = Math.acos(2 * randomGenerator.nextDouble() - 1);
 		
 		// theta ranges from 0 to 2pi
 		samplePoint[theta] = 2 * Math.PI * randomGenerator.nextDouble();
 		
 		// p ranges from 0 to the longest axis
-		samplePoint[p] = sortedAxes[2] * randomGenerator.nextDouble();
+		samplePoint[p] = sortedAxes[2] * Math.cbrt(randomGenerator.nextDouble());
 
 		return samplePoint;
 	}

@@ -108,7 +108,7 @@ public class EllipsoidCalcController{
 			double phiAngleEnd = Ellipsoid.convertThetaToRadians(zAxisAngleEnd, inDegrees);
 			double phiAngleStart = Ellipsoid.convertThetaToRadians(zAxisAngleStart, inDegrees);
 						
-			ellip = new Ellipsoid(thetaBegin, thetaEnd, phiAngleEnd, phiAngleStart,
+			ellip = new Ellipsoid(thetaBegin, thetaEnd, phiAngleStart, phiAngleEnd,
 					aAxis, bAxis, cAxis);
 			
     	} catch (InvalidUserInputException e) {

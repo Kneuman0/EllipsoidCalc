@@ -16,7 +16,7 @@ public class Ellipsoid {
 	private final int x = 0, y = 1, z = 2;
 	private final int phi = 0, theta = 1, p = 2;
 	private final int r = 0;
-	
+
 	private double[] sortedAxes;
 
 	private double sampleSize;
@@ -24,7 +24,7 @@ public class Ellipsoid {
 	private Random randomGenerator;
 
 	public Ellipsoid(double startRadianTheta, double endRadianTheta,
-			double radianMeasureOffZAxisEnd, double radianMeasureOffZAxisStart,
+			double radianMeasureOffZAxisStart, double radianMeasureOffZAxisEnd,
 			double a, double b, double c) {
 
 		this.startRadianTheta = startRadianTheta;
@@ -34,8 +34,8 @@ public class Ellipsoid {
 		this.a = a;
 		this.b = b;
 		this.c = c;
-		
-		sortedAxes = new double[]{a, b, c};
+
+		sortedAxes = new double[] { a, b, c };
 		Arrays.sort(sortedAxes);
 
 		/*
@@ -50,20 +50,15 @@ public class Ellipsoid {
 
 	/**
 	 * Finds the volume of the ellipsoid based off the spherical coordinates the
-	 * user passed in
-	 * 
-	 * @param startRadianTheta
-	 * @param endRadianTheta
-	 * @param radianMeasureOffZAxisEnd
-	 * @param radianMeasureOffZAxisStart
-	 * @param a
-	 * @param b
-	 * @param c
+	 * user passed in. This method is only useful when the values of phi and
+	 * theta are increments of pi/2 or is a = b = c. It is entirely inaccurate
+	 * otherwise. getEstimatedVolume() should be used in these cases
+	 *
 	 * @return
 	 */
 	public double getExactVolume() {
 
-		double oneThird = 1 / (double) 3;
+		double oneThird = 1.0 / 3.0;
 		double volume = (-oneThird)
 				* (a * b * c * (Math.cos(radianMeasureOffZAxisEnd) - Math
 						.cos(radianMeasureOffZAxisStart)))
@@ -83,16 +78,34 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * Estimates the volume of the portion of the ellipsoid using using the
-	 * most reliable method developed thus far
+	 * Estimates the volume of the portion of the ellipsoid using using the most
+	 * reliable method developed thus far
 	 * 
 	 * @return
 	 */
 	public double getEstimatedVolume() {
 		return getEstimatedVolumeRect();
 	}
-	
-	public double getEstimatedVolumeCylinder(){
+
+	// --------------------------Monte Carlo Estimations---------------------
+
+	/**
+	 * Estimates the volume of the ellipsoid using 5,000,000 random sample
+	 * points. The algorithm uses cylindrical coordinates to generate random
+	 * sample points. The sample points will be contained inside the known
+	 * volume of a cylinder defined by:
+	 * 
+	 * (pi)(r^2)(h) = (pi) * (a^2) * (2 * c).
+	 * 
+	 * a MUST be the major axis in the xy plane and is associated with the
+	 * positive x axis.
+	 * 
+	 * c MUST be associated with the z axis.
+	 * 
+	 * @param sampleSize
+	 * @return
+	 */
+	public double getEstimatedVolumeCylinder() {
 		int insideShape = 0;
 		final int sampleSize = 5_000_000;
 
@@ -102,22 +115,57 @@ public class Ellipsoid {
 			}
 
 		}
-		
+
 		double portionOfKnownVolume = insideShape / (double) sampleSize;
-		System.out.printf("\nportion = %.3f, longest Axis = %.3f", portionOfKnownVolume, sortedAxes[2]);
-		
+
 		// portion of volume of 3D system V = (pi)(h)(r^2)
-		return portionOfKnownVolume * Math.PI * Math.pow(getLongestAxis(), 2) * 2 * this.c;
+		return portionOfKnownVolume * Math.PI * Math.pow(this.a, 2) * 2
+				* this.c;
 	}
-	
+
 	/**
-	 * creates a specified number of sample points inside a sphere using a spherical coordinate system
-	 * the sphere's volume is defined as (4/3)pi(largestAxis)^3. This method inscribes an
-	 * ellipsoid inside the sphere to compute the estimated volume. The error has
-	 * empirically been found to be as much as +/- .03
+	 * Estimates the volume of the ellipsoid using the specified number of
+	 * random sample points. The algorithm uses cylindrical coordinates to
+	 * generate random sample points. The sample points will be contained inside
+	 * the known volume of a cylinder defined by:
+	 * 
+	 * (pi)(r^2)(h) = (pi) * (a^2) * (2 * c).
+	 * 
+	 * a MUST be the major axis in the xy plane and is associated with the
+	 * positive x axis.
+	 * 
+	 * c MUST be associated with the z axis.
+	 * 
+	 * @param sampleSize
 	 * @return
 	 */
-	public double getEstimatedVolumeSphere(){
+	public double getEstimatedVolumeCylinder(int sampleSize) {
+		int insideShape = 0;
+
+		for (int i = 0; i < sampleSize; i++) {
+			if (pointInsideShapeCyl(generate3DSamplePointCyl())) {
+				insideShape++;
+			}
+
+		}
+
+		double portionOfKnownVolume = insideShape / (double) sampleSize;
+
+		// portion of volume of 3D system V = (pi)(h)(r^2)
+		return portionOfKnownVolume * Math.PI * Math.pow(this.a, 2) * 2
+				* this.c;
+	}
+
+	/**
+	 * creates a specified number of sample points inside a sphere using a
+	 * spherical coordinate system the sphere's volume is defined as
+	 * (4/3)pi(largestAxis)^3. This method inscribes an ellipsoid inside the
+	 * sphere to compute the estimated volume. The error has empirically been
+	 * found to be as much as +/- .03
+	 * 
+	 * @return
+	 */
+	public double getEstimatedVolumeSphere() {
 		int insideShape = 0;
 		final int sampleSize = 10_000_000;
 
@@ -127,22 +175,24 @@ public class Ellipsoid {
 			}
 
 		}
-		
+
 		double portionOfKnownVolume = insideShape / (double) sampleSize;
-		System.out.printf("\nportion = %.3f, longest Axis = %.3f", portionOfKnownVolume, sortedAxes[2]);
-		
+
 		// portion of volume of 3D system
-		return portionOfKnownVolume * (4.0/3.0) * Math.PI * Math.pow(sortedAxes[2], 3);
+		return portionOfKnownVolume * (4.0 / 3.0) * Math.PI
+				* Math.pow(getLongestAxis(), 3);
 	}
-	
+
 	/**
-	 * creates 30 million sample points inside a sphere using a spherical coordinate system
-	 * the sphere's volume is defined as (4/3)pi(largestAxis)^3. This method inscribes an
-	 * ellipsoid inside the sphere to compute the estimated volume. The error has
-	 * empirically been found to be as much as +/- .03
+	 * creates 30 million sample points inside a sphere using a spherical
+	 * coordinate system the sphere's volume is defined as
+	 * (4/3)pi(largestAxis)^3. This method inscribes an ellipsoid inside the
+	 * sphere to compute the estimated volume. The error has empirically been
+	 * found to be as much as +/- .03
+	 * 
 	 * @return
 	 */
-	public double getEstimatedVolumeSphere(int sampleSize){
+	public double getEstimatedVolumeSphere(int sampleSize) {
 		int insideShape = 0;
 
 		for (int i = 0; i < sampleSize; i++) {
@@ -151,22 +201,25 @@ public class Ellipsoid {
 			}
 
 		}
-		
+
 		double portionOfKnownVolume = insideShape / (double) sampleSize;
-		
+
 		// portion of volume of 3D system
-		return portionOfKnownVolume * (4.0/3.0) * Math.PI * Math.pow(sortedAxes[2], 3);
+		return portionOfKnownVolume * (4.0 / 3.0) * Math.PI
+				* Math.pow(getLongestAxis(), 3);
 	}
-	
+
 	/**
-	 * creates 10 million sample points inside a rectangular prism using a rectangular coordinate system
-	 * the rectangular prism's volume is defined as 2a * 2b * 2c where a b and c represent the 
-	 * axes of the ellipsoid. This method inscribes an
-	 * ellipsoid inside the rectangular prism to compute the estimated volume. The error has
-	 * empirically been found to be as much as +/- .1
+	 * creates 10 million sample points inside a rectangular prism using a
+	 * rectangular coordinate system the rectangular prism's volume is defined
+	 * as 2a * 2b * 2c where a b and c represent the axes of the ellipsoid. This
+	 * method inscribes an ellipsoid inside the rectangular prism to compute the
+	 * estimated volume. The error has empirically been found to be as much as
+	 * +/- .1
+	 * 
 	 * @return
 	 */
-	public double getEstimatedVolumeRect(){
+	public double getEstimatedVolumeRect() {
 		int insideShape = 0;
 		final int sampleSize = 10_000_000;
 
@@ -182,16 +235,18 @@ public class Ellipsoid {
 		// portion of volume of 3D system
 		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
 	}
-	
+
 	/**
-	 * creates a specified number of sample points inside a rectangular prism using a rectangular coordinate system
-	 * the rectangular prism's volume is defined as 2a * 2b * 2c where a b and c represent the 
-	 * axes of the ellipsoid. This method inscribes an
-	 * ellipsoid inside the rectangular prism to compute the estimated volume. The error has
-	 * empirically been found to be as much as +/- .1
+	 * creates a specified number of sample points inside a rectangular prism
+	 * using a rectangular coordinate system the rectangular prism's volume is
+	 * defined as 2a * 2b * 2c where a b and c represent the axes of the
+	 * ellipsoid. This method inscribes an ellipsoid inside the rectangular
+	 * prism to compute the estimated volume. The error has empirically been
+	 * found to be as much as +/- .1
+	 * 
 	 * @return
 	 */
-	public double getEstimatedVolumeRect(int sampleSize){
+	public double getEstimatedVolumeRect(int sampleSize) {
 		int insideShape = 0;
 
 		for (int i = 0; i < sampleSize; i++) {
@@ -206,7 +261,6 @@ public class Ellipsoid {
 		// portion of volume of 3D system
 		return portionOfKnownVolume * (2 * a) * (2 * b) * (2 * c);
 	}
-
 
 	/**
 	 * @return the startRadianTheta
@@ -345,8 +399,8 @@ public class Ellipsoid {
 		}
 
 	}
-	
-	private double getLongestAxis(){
+
+	private double getLongestAxis() {
 		return sortedAxes[2];
 	}
 
@@ -387,134 +441,208 @@ public class Ellipsoid {
 	public String toString() {
 		return String.format("%.2f +/- .05", this.getEstimatedVolume());
 	}
-	
-	//-------------------Random Dist. Cylinder------------------------------
-	
-	private boolean pointInsideShapeCyl(double[] coord){
-		
-		if(checkIfThetaIsBetweenStartAndEndCyl(coord) &&
-				pointBetweenPhiValuesCyl(coord) &&
-				pointInsideEquationOfEllipsoidCyl(coord) &&
-				checkLengthOfR(coord)){
-			
+
+	// -------------------Random Dist. Cylinder------------------------------
+
+	/**
+	 * Checks if point is inside equation of ellipsoid, between the values of
+	 * phi and inside the equation of the ellipse in the xy plane
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean pointInsideShapeCyl(double[] coord) {
+
+		if (checkIfThetaIsBetweenStartAndEndCyl(coord)
+				&& pointBetweenPhiValuesCyl(coord)
+				&& pointInsideEquationOfEllipsoidCyl(coord)
+				&& checkLengthOfR(coord)) {
+
 			return true;
-			
-		}else{
-			
+
+		} else {
+
 			return false;
 		}
 	}
-	
-	private boolean checkLengthOfR(double[] coord){
+
+	/**
+	 * calculates the longest possible value of r with the given values of
+	 * theta. If the random value of r is longer than the calculated value, the
+	 * point is outside the shape.
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean checkLengthOfR(double[] coord) {
 		double numerator = this.a * this.b;
-		
+
 		// ( b^2 cos^2(theta) + a^2 sin^2(theta) )^(1/2)
-		double denominator = Math.sqrt(Math.pow(this.b * Math.cos(coord[theta]), 2)
-				+ Math.pow(this.a * Math.sin(coord[theta]), 2) );
+		double denominator = Math.sqrt(Math.pow(
+				this.b * Math.cos(coord[theta]), 2)
+				+ Math.pow(this.a * Math.sin(coord[theta]), 2));
 		double rValue = numerator / denominator;
-		
+
 		return coord[r] <= rValue;
-		
+
 	}
-	
-	private boolean pointInsideEquationOfEllipsoidCyl(double[] coord){
-		double xValue = Math.pow((coord[r] * Math.cos(coord[theta])) / this.a, 2);
-		double yValue = Math.pow((coord[r] * Math.sin(coord[theta])) / this.b, 2);
-		double zValue = Math.pow(coord[z]/this.c, 2);
-		
+
+	/**
+	 * calculates: r^2*cos^2(theta)/a^2 + r^2*sin^2(theta)/b^2 + z^2/c^2
+	 * 
+	 * then checks if that value is <= to 1. If not, the point is outside of the
+	 * shape
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean pointInsideEquationOfEllipsoidCyl(double[] coord) {
+		double xValue = Math.pow((coord[r] * Math.cos(coord[theta])) / this.a,
+				2);
+		double yValue = Math.pow((coord[r] * Math.sin(coord[theta])) / this.b,
+				2);
+		double zValue = Math.pow(coord[z] / this.c, 2);
+
 		double pointValue = xValue + yValue + zValue;
-		
-		if(pointValue <= 1){
+
+		if (pointValue <= 1) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	private boolean pointBetweenPhiValuesCyl(double[] coord){
-		
-		if(checkThatZMoreThanPhiLineEnd(coord) && 
-				checkThatZLessThanPhiLineStart(coord)){
+
+	/**
+	 * Checks if the the random z value is below the value of phiStart and above
+	 * the values of phiEnd. If not, the point is outside the shape.
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean pointBetweenPhiValuesCyl(double[] coord) {
+
+		if (checkThatZMoreThanPhiLineEnd(coord)
+				&& checkThatZLessThanPhiLineStart(coord)) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	private boolean checkThatZMoreThanPhiLineEnd(double[] coord){
-		if(radianMeasureOffZAxisEnd == Math.PI){
-			
+
+	private double cot(double theta) {
+		return (Math.cos(theta) / Math.sin(theta));
+	}
+
+	/**
+	 * Calculates: z = cot(phiEnd) * r
+	 * 
+	 * Then checks if the random value of z is greater than the calculated
+	 * value. If not, the point is outside of the shape.
+	 * 
+	 * This method assumes phiEnd is never 0
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean checkThatZMoreThanPhiLineEnd(double[] coord) {
+		if (radianMeasureOffZAxisEnd == Math.PI) {
+
 			return true;
-		}else{
-			
-			double phiValue = ( Math.cos(radianMeasureOffZAxisEnd) /
-					Math.sin(radianMeasureOffZAxisEnd) ) * coord[r];
-			
-			if(phiValue <= coord[z]){
-				
+		} else {
+
+			double phiValue = cot(radianMeasureOffZAxisEnd) * coord[r];
+
+			if (phiValue <= coord[z]) {
+
 				return true;
-				
-			}else{
-				
+
+			} else {
+
 				return false;
 			}
 		}
 	}
-	
-	
-	private boolean checkThatZLessThanPhiLineStart(double[] coord){
-		if(radianMeasureOffZAxisStart == 0){
-			
+
+	/**
+	 * Calculates: z = cot(phiEnd) * r
+	 * 
+	 * Then checks if the random value of z is less than the calculated value.
+	 * If not, the point is outside of the shape.
+	 * 
+	 * This method assumes phiStart is never pi
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean checkThatZLessThanPhiLineStart(double[] coord) {
+		if (radianMeasureOffZAxisStart == 0) {
+
 			return true;
-		}else{
-			
-			double phiValue = ( Math.cos(radianMeasureOffZAxisStart) /
-					Math.sin(radianMeasureOffZAxisStart) ) * coord[r];
-			
-			if(coord[z] <= phiValue){
-				
+		} else {
+
+			double phiValue = (Math.cos(radianMeasureOffZAxisStart) / Math
+					.sin(radianMeasureOffZAxisStart)) * coord[r];
+
+			if (coord[z] <= phiValue) {
+
 				return true;
-				
-			}else{
-				
+
+			} else {
+
 				return false;
 			}
 		}
 	}
-	
-	private boolean checkIfThetaIsBetweenStartAndEndCyl(double[] coord){
+
+	/**
+	 * Checks thetaStart <= theta <= thetaEnd
+	 * 
+	 * If not, the point is outside the shape.
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	private boolean checkIfThetaIsBetweenStartAndEndCyl(double[] coord) {
 		boolean insideThetaBound = false;
 
-		if (startRadianTheta <= coord[theta]
-				&& coord[theta] <= endRadianTheta) {
+		if (startRadianTheta <= coord[theta] && coord[theta] <= endRadianTheta) {
 
 			insideThetaBound = true;
 		}
-	
+
 		return insideThetaBound;
 	}
-	
-	private double[] generate3DSamplePointCyl(){
+
+	/**
+	 * Generates a random point inside of a cylinder with uniform distribution
+	 * using cylindrical coordinates
+	 * 
+	 * index 0 = r, index 1 = theta, index 2 = z
+	 * 
+	 * @return
+	 */
+	private double[] generate3DSamplePointCyl() {
 		double[] samplePoint = new double[3];
-		
+
 		// r will range from 0 to the longest axis
-		samplePoint[r] = getLongestAxis() * Math.sqrt(randomGenerator.nextDouble());
-						
+		samplePoint[r] = this.a * Math.sqrt(randomGenerator.nextDouble());
+
 		// theta will range 0 to 2pi
 		samplePoint[theta] = 2 * Math.PI * randomGenerator.nextDouble();
-		
+
 		// z will range from 0 to the c axis both above and below the xy plane
-		samplePoint[z] = this.c * randomGenerator.nextDouble() * getRandomNegation();
-		
-		return samplePoint;		
+		samplePoint[z] = this.c * randomGenerator.nextDouble()
+				* getRandomNegation();
+
+		return samplePoint;
 	}
-	
-	//-------------------Random Dist. Sphere---------------------------------
-	
+
+	// -------------------Random Dist. Sphere---------------------------------
+
 	/**
-	 * This method can only be used for Spherical coordinates. Checks if point is
-	 * between specified bounds for phi. Checks if point is within the equation
-	 * of an ellipsoid. 
+	 * This method can only be used for Spherical coordinates. Checks if point
+	 * is between specified bounds for phi. Checks if point is within the
+	 * equation of an ellipsoid.
 	 * 
 	 * fomulas: theta: thetaStart < thetaSample < thetaEnd phi: phiStart <
 	 * phiSample < phiEnd equation of ellipsoid: (x^2/a^2) + (y^2/b^2) +
@@ -536,7 +664,7 @@ public class Ellipsoid {
 
 		return insideShape;
 	}
-	
+
 	/**
 	 * Checks if the phi value of sample point is >= phiStart but <= phiEnd
 	 * 
@@ -546,12 +674,12 @@ public class Ellipsoid {
 	private boolean pointBetweenPhiStartAndPhiEndSphere(double[] coord) {
 		boolean insidePhiBound = false;
 
-			if (radianMeasureOffZAxisStart <= coord[phi]
-					&& coord[phi] <= radianMeasureOffZAxisEnd) {
+		if (radianMeasureOffZAxisStart <= coord[phi]
+				&& coord[phi] <= radianMeasureOffZAxisEnd) {
 
-				insidePhiBound = true;
-			}
-		
+			insidePhiBound = true;
+		}
+
 		return insidePhiBound;
 	}
 
@@ -563,44 +691,43 @@ public class Ellipsoid {
 	 * @return
 	 * @throws NegativeZAxisException
 	 */
-	private boolean pointBetweenThetaStartAndThetaEndRandomDistSphere(double[] coord) {
+	private boolean pointBetweenThetaStartAndThetaEndRandomDistSphere(
+			double[] coord) {
 		boolean insideThetaBound = false;
 
-			if (startRadianTheta <= coord[theta]
-					&& coord[theta] <= endRadianTheta) {
+		if (startRadianTheta <= coord[theta] && coord[theta] <= endRadianTheta) {
 
-				insideThetaBound = true;
-			}
-		
+			insideThetaBound = true;
+		}
 
 		return insideThetaBound;
 	}
-	
+
 	/**
 	 * checks if sample point is inside the equation of an ellipsoid using the
-	 * boolean expression: 
-	 * ((psin(phi)cos(theta))^2/a^2) + ((psin(phi)cos(theta))^2/b^2) + 
-	 * ((pcos(phi))^2/c^2) <= 1
+	 * boolean expression: ((psin(phi)cos(theta))^2/a^2) +
+	 * ((psin(phi)cos(theta))^2/b^2) + ((pcos(phi))^2/c^2) <= 1
 	 * 
 	 * @param coord
 	 * @return
 	 */
 	private boolean pointInsideEquationOfEllipsoidSphere(double[] coord) {
 		boolean insideShape = false;
-		
-		double xSquared = Math.pow((coord[p] * Math.sin(coord[phi]) * Math.cos(coord[theta])), 2);
-		double ySquared = Math.pow((coord[p] * Math.sin(coord[phi]) * Math.sin(coord[theta])), 2);
+
+		double xSquared = Math.pow(
+				(coord[p] * Math.sin(coord[phi]) * Math.cos(coord[theta])), 2);
+		double ySquared = Math.pow(
+				(coord[p] * Math.sin(coord[phi]) * Math.sin(coord[theta])), 2);
 		double zSquared = Math.pow((coord[p] * Math.cos(coord[phi])), 2);
-		
+
 		/*
-		
-		point is inside shape if ((p * sin(phi)cos(theta))^2/a^2) + ((p * sin(phi)cos(theta))^2/b^2)
-	 	+ ((p * cos(phi))^2/c^2) <= 1 then it is inside the ellipsoid
-		 
-		*/
-		double valueOfPointInEllipsoidEquation = (xSquared)
-				/ (a * a) + (ySquared) / (b * b)
-				+ (zSquared) / (c * c);
+		 * 
+		 * point is inside shape if ((p * sin(phi)cos(theta))^2/a^2) + ((p *
+		 * sin(phi)cos(theta))^2/b^2) + ((p * cos(phi))^2/c^2) <= 1 then it is
+		 * inside the ellipsoid
+		 */
+		double valueOfPointInEllipsoidEquation = (xSquared) / (a * a)
+				+ (ySquared) / (b * b) + (zSquared) / (c * c);
 
 		if (valueOfPointInEllipsoidEquation <= 1) {
 			insideShape = true;
@@ -608,11 +735,13 @@ public class Ellipsoid {
 
 		return insideShape;
 	}
-	
+
 	/**
-	 * generates a 3 dimensional sample point using spherical coordinates
-	 * that lies somewhere inside the sphere (4/3)pi(r^2) where r is the 
-	 * longest axis
+	 * generates a random point in 3 dimensions with uniform distribution using
+	 * spherical coordinates. the point lies somewhere inside the sphere
+	 * (4/3)pi(r^2) where r is the longest axis.
+	 * 
+	 * index 0 = phi, index 1 = theta, index 2 = p
 	 * 
 	 * @return
 	 */
@@ -621,19 +750,19 @@ public class Ellipsoid {
 
 		// phi ranges from 0 to pi
 		samplePoint[phi] = Math.acos(2 * randomGenerator.nextDouble() - 1);
-		
+
 		// theta ranges from 0 to 2pi
 		samplePoint[theta] = 2 * Math.PI * randomGenerator.nextDouble();
-		
+
 		// p ranges from 0 to the longest axis
-		samplePoint[p] = sortedAxes[2] * Math.cbrt(randomGenerator.nextDouble());
+		samplePoint[p] = getLongestAxis()
+				* Math.cbrt(randomGenerator.nextDouble());
 
 		return samplePoint;
 	}
 
-	
-	//--------------------Random Dist. Rectangular Prism----------------------
-	
+	// --------------------Random Dist. Rectangular Prism----------------------
+
 	/**
 	 * This method can be used on uniformly distributed sample points. For
 	 * random distribution use 'determineIfPointIsInsideShapeRandomDistribution'
@@ -724,7 +853,8 @@ public class Ellipsoid {
 	 * @return
 	 * @throws NegativeZAxisException
 	 */
-	private boolean pointBetweenThetaStartAndThetaEndRandomDistRect(double[] coord) {
+	private boolean pointBetweenThetaStartAndThetaEndRandomDistRect(
+			double[] coord) {
 		boolean insideThetaBound = false;
 
 		try {
@@ -794,9 +924,7 @@ public class Ellipsoid {
 
 			return Math.acos(coord[z]
 					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
-							+ coord[z] * coord[z])))
-			// + Math.PI
-			;
+							+ coord[z] * coord[z])));
 
 			// in zx plane above xy plane
 		} else if (coord[z] > 0 && coord[x] != 0 && coord[y] == 0) {
@@ -987,9 +1115,11 @@ public class Ellipsoid {
 	}
 
 	/**
-	 * generates a 3 dimensional sample point that lays somewhere within the
-	 * three dimensional coordinate system where each axis ranges from x = +/-
-	 * a, y = +/- b and z = +/- c
+	 * generates a 3 dimensional sample point with uniform distribution that
+	 * lays somewhere within the three dimensional coordinate system where each
+	 * axis ranges from x = +/- a, y = +/- b and z = +/- c
+	 * 
+	 * index 0 = x, index 1 = y, index 2 = z
 	 * 
 	 * @return
 	 */
@@ -1002,7 +1132,6 @@ public class Ellipsoid {
 
 		return samplePoint;
 	}
-
 
 	// --------------------Uniform distribution Monte Carlo--------------------
 	/**
@@ -1137,7 +1266,7 @@ public class Ellipsoid {
 
 	/**
 	 * Returns an ArrayList<double[]> of 3D sample points of uniform
-	 * distribution
+	 * distribution (equally spaced non random)
 	 * 
 	 * @return
 	 */

@@ -1,5 +1,6 @@
 package biz.personalAcademics.ellipsoidCalc;
 
+@SuppressWarnings("serial")
 public class PointOnEdgeException extends RuntimeException{
 	
 	public PointOnEdgeException(double[] coord){

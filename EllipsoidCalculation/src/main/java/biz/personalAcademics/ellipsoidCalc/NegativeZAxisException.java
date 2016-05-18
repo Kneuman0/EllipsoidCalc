@@ -1,5 +1,6 @@
 package biz.personalAcademics.ellipsoidCalc;
 
+@SuppressWarnings("serial")
 public class NegativeZAxisException extends RuntimeException{
 		
 	public NegativeZAxisException(double[] coord) {

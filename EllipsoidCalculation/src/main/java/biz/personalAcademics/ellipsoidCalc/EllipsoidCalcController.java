@@ -2,7 +2,7 @@ package biz.personalAcademics.ellipsoidCalc;
 
 import javax.swing.JOptionPane;
 
-import javafx.concurrent.Task;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -175,10 +175,6 @@ public class EllipsoidCalcController{
     	}
     	
     	return incompleteInput;
-    }
-    
-    private void setWaitingLabel(){
-    	volumeAnswer.setText("Executing");
     }
     
     private void setBackground(){

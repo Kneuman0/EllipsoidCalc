@@ -1,10 +1,18 @@
 package biz.personalAcademics.ellipsoidCalc;
 
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
+
+
+
 
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -17,6 +25,7 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.stage.Stage;
 
 public class EllipsoidCalcController{
 
@@ -192,6 +201,24 @@ public class EllipsoidCalcController{
 		String axisWarning = "the a axis is associated with the x axis,\nthe b axis is associated with the y axis,\n"
 				+ "and the c axis is associated with the z axis.";
 		JOptionPane.showMessageDialog(null, String.format("%s\n\n%s", sphericalCoordinatesWarning, axisWarning ));
+    }
+    
+    @SuppressWarnings("unused")
+	private void newGUITest(){
+    	Stage stage = new Stage();
+    	Parent parent = null;
+		try {
+			parent = FXMLLoader.load(getClass().getResource("/resources/numberTranslatorGUI.fxml"));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Scene scene = new Scene(parent);
+
+		// window title
+		stage.setTitle("Number Translator");
+		stage.setScene(scene);
+		stage.show();
     }
        
 }

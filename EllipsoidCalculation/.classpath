@@ -26,5 +26,6 @@
 	<classpathentry kind="lib" path="libraries/controlsfx-8.40.10.jar"/>
 	<classpathentry kind="lib" path="libraries/controlsfx-samples-8.40.10.jar"/>
 	<classpathentry kind="lib" path="libraries/fxsampler-1.0.9.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NumberTranslator"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -84,7 +84,14 @@ public class Ellipsoid {
 	 * @return
 	 */
 	public double getEstimatedVolume() {
-		return getEstimatedVolumeRect();
+		double eccentricity = (this.c / this.a) + (this.b / this.a);
+		
+		if(eccentricity >= 1){
+			return getEstimatedVolumeSphere();
+		}else{
+			return getEstimatedVolumeRect();
+		}
+		
 	}
 
 	// --------------------------Monte Carlo Estimations---------------------

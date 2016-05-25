@@ -40,12 +40,6 @@ public class Ellipsoid {
 		sortedAxes = new double[] { a, b, c };
 		Arrays.sort(sortedAxes);
 
-		/*
-		 * the nextDouble method will be called from this object and multiplied
-		 * by one of the axes. This will yield a coordinate that lays within the
-		 * 1st octant.
-		 */
-
 		randomGenerator = new Random();
 
 	}
@@ -54,7 +48,9 @@ public class Ellipsoid {
 	 * Finds the volume of the ellipsoid based off the spherical coordinates the
 	 * user passed in. This method is only useful when the values of phi and
 	 * theta are increments of pi/2 or is a = b = c. It is entirely inaccurate
-	 * otherwise. getEstimatedVolume() should be used in these cases
+	 * otherwise. getEstimatedVolume() should be used in these cases. If 
+	 * volume is negative (due to incorrectly entered bounds of integration)
+	 * 0 is returned.
 	 *
 	 * @return
 	 */
@@ -65,7 +61,12 @@ public class Ellipsoid {
 				* (a * b * c * (Math.cos(radianMeasureOffZAxisEnd) - Math
 						.cos(radianMeasureOffZAxisStart)))
 				* (endRadianTheta - startRadianTheta);
-		return volume;
+		
+		if(volume < 0){
+			return 0;
+		}else{
+			return volume;
+		}
 	}
 
 	/**
@@ -76,7 +77,28 @@ public class Ellipsoid {
 	 * @return
 	 */
 	public double getEstimatedVolume(int sampleSize) {
-		return getEstimatedVolumeRect(sampleSize);
+		double eccentricity = (this.c / this.a) + (this.b / this.a);
+		
+		double radianSum = radianMeasureOffZAxisEnd + radianMeasureOffZAxisStart + 
+				startRadianTheta + endRadianTheta;
+		
+		if(radianSum % Math.PI/2 == 0 || eccentricity == 2){
+			
+			return getExactVolume();
+			
+		}else{
+			
+			if(eccentricity >= 1){
+				
+				return getEstimatedVolumeSphere(sampleSize);
+				
+			}else{
+				
+				return getEstimatedVolumeRect(sampleSize);
+				
+			}
+			
+		}
 	}
 
 	/**
@@ -476,17 +498,10 @@ public class Ellipsoid {
 	 */
 	private boolean pointInsideShapeCyl(double[] coord) {
 
-		if (checkIfThetaIsBetweenStartAndEndCyl(coord)
+		return checkIfThetaIsBetweenStartAndEndCyl(coord)
 				&& pointBetweenPhiValuesCyl(coord)
 				&& pointInsideEquationOfEllipsoidCyl(coord)
-				&& checkLengthOfR(coord)) {
-
-			return true;
-
-		} else {
-
-			return false;
-		}
+				&& checkLengthOfR(coord);
 	}
 
 	/**
@@ -528,11 +543,7 @@ public class Ellipsoid {
 
 		double pointValue = xValue + yValue + zValue;
 
-		if (pointValue <= 1) {
-			return true;
-		} else {
-			return false;
-		}
+		return pointValue <= 1;
 	}
 
 	/**
@@ -544,12 +555,8 @@ public class Ellipsoid {
 	 */
 	private boolean pointBetweenPhiValuesCyl(double[] coord) {
 
-		if (checkThatZMoreThanPhiLineEnd(coord)
-				&& checkThatZLessThanPhiLineStart(coord)) {
-			return true;
-		} else {
-			return false;
-		}
+		return checkThatZMoreThanPhiLineEnd(coord)
+				&& checkThatZLessThanPhiLineStart(coord);
 	}
 
 	private double cot(double theta) {
@@ -735,8 +742,6 @@ public class Ellipsoid {
 	 * @return
 	 */
 	private boolean pointInsideEquationOfEllipsoidSphere(double[] coord) {
-		boolean insideShape = false;
-
 		double xSquared = Math.pow(
 				(coord[p] * Math.sin(coord[phi]) * Math.cos(coord[theta])), 2);
 		double ySquared = Math.pow(
@@ -752,11 +757,7 @@ public class Ellipsoid {
 		double valueOfPointInEllipsoidEquation = (xSquared) / (a * a)
 				+ (ySquared) / (b * b) + (zSquared) / (c * c);
 
-		if (valueOfPointInEllipsoidEquation <= 1) {
-			insideShape = true;
-		}
-
-		return insideShape;
+		return valueOfPointInEllipsoidEquation <= 1;
 	}
 
 	/**
@@ -823,19 +824,13 @@ public class Ellipsoid {
 	 * @return
 	 */
 	private boolean pointInsideEquationOfEllipsoidRect(double[] coord) {
-		boolean insideShape = false;
-
 		// point is inside shape if x^2/a^2 + y^2/b^2 + z^2/c^2 <= 1 then it is
 		// inside the ellipsoid
 		double valueOfPointInEllipsoidEquation = (coord[x] * coord[x])
 				/ (a * a) + (coord[y] * coord[y]) / (b * b)
 				+ (coord[z] * coord[z]) / (c * c);
-
-		if (valueOfPointInEllipsoidEquation <= 1) {
-			insideShape = true;
-		}
-
-		return insideShape;
+		
+		return valueOfPointInEllipsoidEquation <= 1;
 	}
 
 	/**

@@ -10,19 +10,12 @@ If the bounds of integration for φ and θ are increments of π/2, the calculati
 
 To run the application, navigate to the class named EllipsoidCalcMain and run it.
 
-If you'd like to review the math, navigate to the Documentation and Notes on Math folder.
+If you'd like to review the math, navigate to the Documentation and Notes on Math folder and click on: Summary of EllipsoidCalc
 
-The best order to view the documents (Documentation and Notes on Math folder) is:
 
-	1) Algorithm breakdown for Kelly and Alan
-	2) How to Arrive at the Determinant of the Jacobian
-	3) Integration of determinant of jacobian for Kelly and Alan
-	4) Partial Solution to Ellipsoid Problem
-	5) Nature of the problem (contains an explaination of one of the Monte Carlo algorithms used)
 
 
 Further reading
 
-	1) A Different Way to Arrive at the Same Algorithm
-	2) Hand Written Formula and Process Volume Calc
+	1) Hand Written Formula and Process Volume Calc (legacy document)
 

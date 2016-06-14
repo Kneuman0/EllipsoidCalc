@@ -1,7 +1,5 @@
 package biz.personalAcademics.ellipsoidCalc;
 
-import javax.swing.JOptionPane;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -195,8 +193,7 @@ public class EllipsoidCalcController{
 		alert.setTitle("Usage Information");
 		alert.setHeaderText(null);
 		alert.setContentText(String.format("%s\n\n%s", sphericalCoordinatesWarning, axisWarning ));
-		alert.show();
-//		JOptionPane.showMessageDialog(null, String.format("%s\n\n%s", sphericalCoordinatesWarning, axisWarning ));
+		alert.showAndWait();
     }
            
 }

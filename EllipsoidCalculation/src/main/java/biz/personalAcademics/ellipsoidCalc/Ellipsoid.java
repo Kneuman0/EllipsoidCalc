@@ -684,15 +684,9 @@ public class Ellipsoid {
 	private boolean determineIfPointIsInsideShapeRandomDistributionSphere(
 			double[] coord) {
 
-		boolean insideShape = false;
-
-		if (pointInsideEquationOfEllipsoidSphere(coord)
+		return pointInsideEquationOfEllipsoidSphere(coord)
 				&& pointBetweenPhiStartAndPhiEndSphere(coord)
-				&& pointBetweenThetaStartAndThetaEndRandomDistSphere(coord)) {
-			insideShape = true;
-		}
-
-		return insideShape;
+				&& pointBetweenThetaStartAndThetaEndRandomDistSphere(coord);
 	}
 
 	/**
@@ -702,15 +696,9 @@ public class Ellipsoid {
 	 * @return
 	 */
 	private boolean pointBetweenPhiStartAndPhiEndSphere(double[] coord) {
-		boolean insidePhiBound = false;
-
-		if (radianMeasureOffZAxisStart <= coord[phi]
-				&& coord[phi] <= radianMeasureOffZAxisEnd) {
-
-			insidePhiBound = true;
-		}
-
-		return insidePhiBound;
+		
+		return radianMeasureOffZAxisStart <= coord[phi]
+				&& coord[phi] <= radianMeasureOffZAxisEnd;
 	}
 
 	/**
@@ -723,14 +711,8 @@ public class Ellipsoid {
 	 */
 	private boolean pointBetweenThetaStartAndThetaEndRandomDistSphere(
 			double[] coord) {
-		boolean insideThetaBound = false;
-
-		if (startRadianTheta <= coord[theta] && coord[theta] <= endRadianTheta) {
-
-			insideThetaBound = true;
-		}
-
-		return insideThetaBound;
+		
+		return startRadianTheta <= coord[theta] && coord[theta] <= endRadianTheta;
 	}
 
 	/**
@@ -805,15 +787,9 @@ public class Ellipsoid {
 	private boolean determineIfPointIsInsideShapeRandomDistributionRect(
 			double[] coord) {
 
-		boolean insideShape = false;
-
-		if (pointInsideEquationOfEllipsoidRect(coord)
+		return pointInsideEquationOfEllipsoidRect(coord)
 				&& pointBetweenPhiStartAndPhiEndRect(coord)
-				&& pointBetweenThetaStartAndThetaEndRandomDistRect(coord)) {
-			insideShape = true;
-		}
-
-		return insideShape;
+				&& pointBetweenThetaStartAndThetaEndRandomDistRect(coord);
 	}
 
 	/**

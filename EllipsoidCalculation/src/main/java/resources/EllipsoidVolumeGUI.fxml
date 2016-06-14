@@ -96,5 +96,13 @@
             <DropShadow color="WHITE" spread="0.79" />
          </effect></Label>
       <ImageView fx:id="diagramImage" fitHeight="150.0" fitWidth="153.0" layoutX="230.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true" />
+      <Label layoutX="14.0" layoutY="259.0" text="a Axis should be your longest axis" textFill="#2301ff">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <effect>
+            <DropShadow color="#f8f6f6" spread="0.79" />
+         </effect>
+      </Label>
    </children>
 </AnchorPane>

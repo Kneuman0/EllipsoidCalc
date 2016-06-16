@@ -2,7 +2,7 @@ package biz.personalAcademics.ellipsoid;
 
 import biz.personalAcademics.ellipsoidCalc.InvalidUserInputException;
 
-public class EllipsoidSphericalCoords extends Ellipsoid implements CoordinateSystem{
+public class EllipsoidSphericalCoords extends Ellipsoid{
 	
 	public EllipsoidSphericalCoords(double startRadianTheta, double endRadianTheta,
 			double radianMeasureOffZAxisStart, double radianMeasureOffZAxisEnd,

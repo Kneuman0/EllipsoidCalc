@@ -75,7 +75,7 @@
             <DropShadow color="#eeeeee" spread="0.85" />
          </effect>
       </Label>
-      <Label fx:id="volumeAnswer" layoutX="105.0" layoutY="340.0" prefHeight="32.0" prefWidth="301.0">
+      <Label fx:id="volumeAnswer" layoutX="105.0" layoutY="340.0" prefHeight="32.0" prefWidth="488.0">
          <font>
             <Font size="22.0" />
          </font>
@@ -104,5 +104,15 @@
             <DropShadow color="#f8f6f6" spread="0.79" />
          </effect>
       </Label>
+      <Pane layoutX="415.0" layoutY="84.0" prefHeight="56.0" prefWidth="160.0" style="-fx-border-color: black;">
+         <children>
+            <TextField fx:id="sampleSizeTextBox" layoutX="6.0" layoutY="22.0" promptText="ex. 5_000_000" />
+            <Label layoutX="23.0" layoutY="5.0" text="Sample Size (Optional)">
+               <effect>
+                  <DropShadow color="WHITE" spread="0.8" />
+               </effect>
+            </Label>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

@@ -21,9 +21,11 @@ public class Ellipsoid {
 
 	private double[] sortedAxes;
 
-	private double sampleSize;
+	private double sampleSize, radianSum, eccentricity;
 
 	private Random randomGenerator;
+	
+	private boolean executeDefiniteIntegral;
 
 	public Ellipsoid(double startRadianTheta, double endRadianTheta,
 			double radianMeasureOffZAxisStart, double radianMeasureOffZAxisEnd,
@@ -41,6 +43,15 @@ public class Ellipsoid {
 		Arrays.sort(sortedAxes);
 
 		randomGenerator = new Random();
+		
+		this.eccentricity = (this.c / this.a) + (this.b / this.a);
+
+		this.radianSum = radianMeasureOffZAxisEnd
+				+ radianMeasureOffZAxisStart + startRadianTheta
+				+ endRadianTheta;
+		System.out.println(radianSum % (Math.PI * .5));
+		
+		this.executeDefiniteIntegral = this.radianSum % (Math.PI / 2) == 0 || this.eccentricity == 2;
 
 	}
 
@@ -48,9 +59,9 @@ public class Ellipsoid {
 	 * Finds the volume of the ellipsoid based off the spherical coordinates the
 	 * user passed in. This method is only useful when the values of phi and
 	 * theta are increments of pi/2 or is a = b = c. It is entirely inaccurate
-	 * otherwise. getEstimatedVolume() should be used in these cases. If 
-	 * volume is negative (due to incorrectly entered bounds of integration)
-	 * 0 is returned.
+	 * otherwise. getEstimatedVolume() should be used in these cases. If volume
+	 * is negative (due to incorrectly entered bounds of integration) 0 is
+	 * returned.
 	 *
 	 * @return
 	 */
@@ -61,10 +72,10 @@ public class Ellipsoid {
 				* (a * b * c * (Math.cos(radianMeasureOffZAxisEnd) - Math
 						.cos(radianMeasureOffZAxisStart)))
 				* (endRadianTheta - startRadianTheta);
-		
-		if(volume < 0){
+
+		if (volume < 0) {
 			return 0;
-		}else{
+		} else {
 			return volume;
 		}
 	}
@@ -77,27 +88,23 @@ public class Ellipsoid {
 	 * @return
 	 */
 	public double getEstimatedVolume(int sampleSize) {
-		double eccentricity = (this.c / this.a) + (this.b / this.a);
-		
-		double radianSum = radianMeasureOffZAxisEnd + radianMeasureOffZAxisStart + 
-				startRadianTheta + endRadianTheta;
-		
-		if(radianSum % Math.PI/2 == 0 || eccentricity == 2){
-			
+
+		if (this.executeDefiniteIntegral) {
+
 			return getExactVolume();
-			
-		}else{
-			
-			if(eccentricity >= 1){
-				
+
+		} else {
+
+			if (this.eccentricity >= 1) {
+
 				return getEstimatedVolumeSphere(sampleSize);
-				
-			}else{
-				
+
+			} else {
+
 				return getEstimatedVolumeRect(sampleSize);
-				
+
 			}
-			
+
 		}
 	}
 
@@ -108,28 +115,25 @@ public class Ellipsoid {
 	 * @return
 	 */
 	public double getEstimatedVolume() {
-		double eccentricity = (this.c / this.a) + (this.b / this.a);
-		
-		double radianSum = radianMeasureOffZAxisEnd + radianMeasureOffZAxisStart + startRadianTheta + endRadianTheta;
-		
-		if(radianSum % Math.PI/2 == 0 || eccentricity == 2){
-			
+
+		if (this.executeDefiniteIntegral) {
+
 			return getExactVolume();
-			
-		}else{
-			
-			if(eccentricity >= 1){
-				
+
+		} else {
+
+			if (eccentricity >= 1) {
+
 				return getEstimatedVolumeSphere();
-				
-			}else{
-				
+
+			} else {
+
 				return getEstimatedVolumeRect();
-				
+
 			}
-			
+
 		}
-			
+
 	}
 
 	// --------------------------Monte Carlo Estimations---------------------
@@ -484,7 +488,37 @@ public class Ellipsoid {
 	 * sample points rounded to two decimal places.
 	 */
 	public String toString() {
-		return String.format("%.2f +/- .05", this.getEstimatedVolume());
+		double volume = this.getEstimatedVolume();
+		String error;
+		
+		if(sortedAxes[0] > 10 && !this.executeDefiniteIntegral){
+			error = String.format("%.0f", volume * .0001);
+		}else if(sortedAxes[0] < 10 && !this.executeDefiniteIntegral){
+			error = String.format("%.2f", volume * .01);
+		}else{
+			error = "0.0  *Definte integral used*";
+		}
+		
+		return String.format("%.2f +/- %s", volume, error);
+	}
+
+	/**
+	 * This method will return the estimated volume of the shape through the
+	 * specified number of random sample points rounded to two decimal places.
+	 */
+	public String toString(int sampleSize) {
+		double volume = this.getEstimatedVolume(sampleSize);
+		String error;
+		
+		if(sortedAxes[0] > 10 && !this.executeDefiniteIntegral){
+			error = String.format("%.0f", volume * .0001);
+		}else if(sortedAxes[0] < 10 && !this.executeDefiniteIntegral){
+			error = String.format("%.2f", volume * .01);
+		}else{
+			error = "0.0  *Definte integral used*";
+		}
+		
+		return String.format("%.2f +/- %s", volume, error);
 	}
 
 	// -------------------Random Dist. Cylinder------------------------------
@@ -696,7 +730,7 @@ public class Ellipsoid {
 	 * @return
 	 */
 	private boolean pointBetweenPhiStartAndPhiEndSphere(double[] coord) {
-		
+
 		return radianMeasureOffZAxisStart <= coord[phi]
 				&& coord[phi] <= radianMeasureOffZAxisEnd;
 	}
@@ -711,8 +745,9 @@ public class Ellipsoid {
 	 */
 	private boolean pointBetweenThetaStartAndThetaEndRandomDistSphere(
 			double[] coord) {
-		
-		return startRadianTheta <= coord[theta] && coord[theta] <= endRadianTheta;
+
+		return startRadianTheta <= coord[theta]
+				&& coord[theta] <= endRadianTheta;
 	}
 
 	/**
@@ -805,7 +840,7 @@ public class Ellipsoid {
 		double valueOfPointInEllipsoidEquation = (coord[x] * coord[x])
 				/ (a * a) + (coord[y] * coord[y]) / (b * b)
 				+ (coord[z] * coord[z]) / (c * c);
-		
+
 		return valueOfPointInEllipsoidEquation <= 1;
 	}
 

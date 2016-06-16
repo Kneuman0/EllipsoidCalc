@@ -9,6 +9,8 @@ import java.util.Random;
 
 public class Ellipsoid {
 
+	public static final int MIN_SAMPLE_SIZE = 5_000_000;
+
 	private double startRadianTheta, endRadianTheta, radianMeasureOffZAxisEnd,
 			radianMeasureOffZAxisStart, a, b, c;
 
@@ -24,7 +26,7 @@ public class Ellipsoid {
 	private double sampleSize, radianSum, eccentricity;
 
 	private Random randomGenerator;
-	
+
 	private boolean executeDefiniteIntegral;
 
 	public Ellipsoid(double startRadianTheta, double endRadianTheta,
@@ -43,15 +45,29 @@ public class Ellipsoid {
 		Arrays.sort(sortedAxes);
 
 		randomGenerator = new Random();
-		
+
 		this.eccentricity = (this.c / this.a) + (this.b / this.a);
 
-		this.radianSum = radianMeasureOffZAxisEnd
-				+ radianMeasureOffZAxisStart + startRadianTheta
-				+ endRadianTheta;
-		
-		this.executeDefiniteIntegral = this.radianSum % (Math.PI / 2) == 0 || this.eccentricity == 2;
+		this.radianSum = this.radianMeasureOffZAxisEnd
+				+ this.radianMeasureOffZAxisStart + this.startRadianTheta
+				+ this.endRadianTheta;
 
+		this.executeDefiniteIntegral = this.radianSum % (Math.PI / 2) == 0
+				|| this.eccentricity == 2;
+
+	}
+
+	/**
+	 * If a setter changes a field, this method will execute to maintain proper
+	 * execution pattern for volume calculation
+	 */
+	private void updateFields() {
+		this.radianSum = this.radianMeasureOffZAxisEnd
+				+ this.radianMeasureOffZAxisStart + this.startRadianTheta
+				+ this.endRadianTheta;
+
+		this.executeDefiniteIntegral = this.radianSum % (Math.PI / 2) == 0
+				|| this.eccentricity == 2;
 	}
 
 	/**
@@ -323,6 +339,7 @@ public class Ellipsoid {
 	 */
 	public void setStartRadianTheta(double startRadianTheta) {
 		this.startRadianTheta = startRadianTheta;
+		updateFields();
 	}
 
 	/**
@@ -338,6 +355,7 @@ public class Ellipsoid {
 	 */
 	public void setEndRadianTheta(double endRadianTheta) {
 		this.endRadianTheta = endRadianTheta;
+		updateFields();
 	}
 
 	/**
@@ -353,6 +371,7 @@ public class Ellipsoid {
 	 */
 	public void setRadianMeasureOffZAxisEnd(double radianMeasureOffZAxisEnd) {
 		this.radianMeasureOffZAxisEnd = radianMeasureOffZAxisEnd;
+		updateFields();
 	}
 
 	/**
@@ -368,6 +387,30 @@ public class Ellipsoid {
 	 */
 	public void setRadianMeasureOffZAxisStart(double radianMeasureOffZAxisStart) {
 		this.radianMeasureOffZAxisStart = radianMeasureOffZAxisStart;
+		updateFields();
+	}
+
+	/**
+	 * returns the eccentricity of the whole ellipsoid. Formula for
+	 * eccentricity: c/a + b/a
+	 * 
+	 * IF eccentricity = 2, the ellipsoid is a sphere
+	 * 
+	 * @return
+	 */
+	public double getTotalEccentricity() {
+		return this.eccentricity;
+	}
+
+	/**
+	 * If definite integral will execute, method will return true otherwise,
+	 * method will return false indicating the Monte Carlo integration will be
+	 * used.
+	 * 
+	 * @return
+	 */
+	public boolean determineIfDefiniteIntegralWillExecute() {
+		return executeDefiniteIntegral;
 	}
 
 	/**
@@ -383,6 +426,7 @@ public class Ellipsoid {
 	 */
 	public void setA(double a) {
 		this.a = a;
+		updateFields();
 	}
 
 	/**
@@ -398,6 +442,7 @@ public class Ellipsoid {
 	 */
 	public void setB(double b) {
 		this.b = b;
+		updateFields();
 	}
 
 	/**
@@ -413,6 +458,7 @@ public class Ellipsoid {
 	 */
 	public void setC(double c) {
 		this.c = c;
+		updateFields();
 	}
 
 	/**
@@ -489,15 +535,15 @@ public class Ellipsoid {
 	public String toString() {
 		double volume = this.getEstimatedVolume();
 		String error;
-		
-		if(sortedAxes[0] > 10 && !this.executeDefiniteIntegral){
+
+		if (sortedAxes[0] > 10 && !this.executeDefiniteIntegral) {
 			error = String.format("%.0f", volume * .0001);
-		}else if(sortedAxes[0] < 10 && !this.executeDefiniteIntegral){
+		} else if (sortedAxes[0] < 10 && !this.executeDefiniteIntegral) {
 			error = String.format("%.2f", volume * .01);
-		}else{
+		} else {
 			error = "0.0  *Definte integral used*";
 		}
-		
+
 		return String.format("%.2f +/- %s", volume, error);
 	}
 
@@ -508,15 +554,15 @@ public class Ellipsoid {
 	public String toString(int sampleSize) {
 		double volume = this.getEstimatedVolume(sampleSize);
 		String error;
-		
-		if(sortedAxes[0] > 10 && !this.executeDefiniteIntegral){
+
+		if (sortedAxes[0] > 10 && !this.executeDefiniteIntegral) {
 			error = String.format("%.0f", volume * .0001);
-		}else if(sortedAxes[0] < 10 && !this.executeDefiniteIntegral){
+		} else if (sortedAxes[0] < 10 && !this.executeDefiniteIntegral) {
 			error = String.format("%.2f", volume * .01);
-		}else{
+		} else {
 			error = "0.0  *Definte integral used*";
 		}
-		
+
 		return String.format("%.2f +/- %s", volume, error);
 	}
 

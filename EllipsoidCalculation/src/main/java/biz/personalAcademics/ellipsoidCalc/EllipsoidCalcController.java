@@ -143,15 +143,23 @@ public class EllipsoidCalcController {
 		//
 		// Thread thread = new Thread(task);
 		// thread.start();
-		
+
 		try {
 			if (sampleSizeTextBox.getText().equals("")) {
 				volumeAnswer.setText(ellip.toString());
 			} else {
-				volumeAnswer
-						.setText(ellip.toString(Integer
-								.parseInt(sampleSizeTextBox.getText().replace(
-										",", ""))));
+				int sampleSize = Integer.parseInt(sampleSizeTextBox.getText()
+						.replace(",", ""));
+				if (sampleSize < Ellipsoid.MIN_SAMPLE_SIZE) {
+					sampleSizeTextBox
+							.setText(String
+									.format("Sample size will not "
+											+ "yeild accurate results, sample size must be at least %d",
+											Ellipsoid.MIN_SAMPLE_SIZE));
+					return;
+				}
+
+				volumeAnswer.setText(ellip.toString(sampleSize));
 			}
 		} catch (NumberFormatException e) {
 			warningLabel.setText(sampleSizeTextBox.getText()

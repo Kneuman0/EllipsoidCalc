@@ -1,5 +1,6 @@
 package biz.personalAcademics.ellipsoidCalc;
 
+import biz.personalAcademics.ellipsoid.Ellipsoid;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;

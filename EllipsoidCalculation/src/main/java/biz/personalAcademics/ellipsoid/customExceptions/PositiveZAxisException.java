@@ -1,4 +1,4 @@
-package biz.personalAcademics.ellipsoidCalc;
+package biz.personalAcademics.ellipsoid.customExceptions;
 
 @SuppressWarnings("serial")
 public class PositiveZAxisException extends Exception{

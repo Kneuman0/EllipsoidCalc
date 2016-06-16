@@ -150,20 +150,14 @@ public class EllipsoidCalcController {
 			} else {
 				int sampleSize = Integer.parseInt(sampleSizeTextBox.getText()
 						.replace(",", ""));
-				if (sampleSize < Ellipsoid.MIN_SAMPLE_SIZE) {
-					sampleSizeTextBox
-							.setText(String
-									.format("Sample size will not "
-											+ "yeild accurate results, sample size must be at least %d",
-											Ellipsoid.MIN_SAMPLE_SIZE));
-					return;
-				}
 
 				volumeAnswer.setText(ellip.toString(sampleSize));
 			}
-		} catch (NumberFormatException e) {
-			warningLabel.setText(sampleSizeTextBox.getText()
-					+ "is not a valid sample size");
+		} catch (NumberFormatException | InvalidUserInputException e) {
+			warningLabel
+					.setText(String
+							.format("%s is not an acceptable sample size, sample must be at least %d",
+									e.getMessage(), Ellipsoid.MIN_SAMPLE_SIZE));
 			return;
 		}
 

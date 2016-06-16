@@ -144,7 +144,6 @@ public class EllipsoidCalcController {
 		// Thread thread = new Thread(task);
 		// thread.start();
 		
-		System.out.println(sampleSizeTextBox.getText());
 		try {
 			if (sampleSizeTextBox.getText().equals("")) {
 				volumeAnswer.setText(ellip.toString());

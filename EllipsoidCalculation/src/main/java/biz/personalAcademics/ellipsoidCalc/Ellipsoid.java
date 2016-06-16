@@ -49,7 +49,6 @@ public class Ellipsoid {
 		this.radianSum = radianMeasureOffZAxisEnd
 				+ radianMeasureOffZAxisStart + startRadianTheta
 				+ endRadianTheta;
-		System.out.println(radianSum % (Math.PI * .5));
 		
 		this.executeDefiniteIntegral = this.radianSum % (Math.PI / 2) == 0 || this.eccentricity == 2;
 

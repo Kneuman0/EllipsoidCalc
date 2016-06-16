@@ -102,7 +102,10 @@ public class Ellipsoid {
 	 * @param sampleSize
 	 * @return
 	 */
-	public double getEstimatedVolume(int sampleSize) {
+	public double getEstimatedVolume(int sampleSize) throws InvalidUserInputException{
+		if (sampleSize < Ellipsoid.MIN_SAMPLE_SIZE){
+			throw new InvalidUserInputException(new Integer(sampleSize).toString());
+		}
 
 		if (this.executeDefiniteIntegral) {
 
@@ -203,7 +206,11 @@ public class Ellipsoid {
 	 * @param sampleSize
 	 * @return
 	 */
-	public double getEstimatedVolumeCylinder(int sampleSize) {
+	public double getEstimatedVolumeCylinder(int sampleSize) throws InvalidUserInputException {
+		if (sampleSize < Ellipsoid.MIN_SAMPLE_SIZE){
+			throw new InvalidUserInputException(new Integer(sampleSize).toString());
+		}
+		
 		int insideShape = 0;
 
 		for (int i = 0; i < sampleSize; i++) {
@@ -256,7 +263,11 @@ public class Ellipsoid {
 	 * 
 	 * @return
 	 */
-	public double getEstimatedVolumeSphere(int sampleSize) {
+	public double getEstimatedVolumeSphere(int sampleSize) throws InvalidUserInputException{
+		if (sampleSize < Ellipsoid.MIN_SAMPLE_SIZE){
+			throw new InvalidUserInputException(new Integer(sampleSize).toString());
+		}
+		
 		int insideShape = 0;
 
 		for (int i = 0; i < sampleSize; i++) {
@@ -310,7 +321,11 @@ public class Ellipsoid {
 	 * 
 	 * @return
 	 */
-	public double getEstimatedVolumeRect(int sampleSize) {
+	public double getEstimatedVolumeRect(int sampleSize) throws InvalidUserInputException{
+		if (sampleSize < Ellipsoid.MIN_SAMPLE_SIZE){
+			throw new InvalidUserInputException(new Integer(sampleSize).toString());
+		}
+		
 		int insideShape = 0;
 
 		for (int i = 0; i < sampleSize; i++) {
@@ -1344,7 +1359,7 @@ public class Ellipsoid {
 	 * 
 	 * @return
 	 */
-	public ArrayList<double[]> generateUniformDistributionOfSamplePoints() {
+	private ArrayList<double[]> generateUniformDistributionOfSamplePoints() {
 		final int samplesOnAxis = 50;
 
 		ArrayList<double[]> coord = new ArrayList<double[]>();

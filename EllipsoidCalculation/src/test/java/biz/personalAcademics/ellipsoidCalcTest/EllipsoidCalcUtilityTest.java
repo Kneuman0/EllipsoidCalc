@@ -12,7 +12,7 @@ import biz.personalAcademics.ellipsoid.EllipsoidCylindricalCoords;
 import biz.personalAcademics.ellipsoid.EllipsoidEvenDistributionRectCoords;
 import biz.personalAcademics.ellipsoid.EllipsoidRectangularCoords;
 import biz.personalAcademics.ellipsoid.EllipsoidSphericalCoords;
-import biz.personalAcademics.ellipsoidCalc.*;
+import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
 
 public class EllipsoidCalcUtilityTest {
 	

@@ -1,6 +1,6 @@
 package biz.personalAcademics.ellipsoid;
 
-import biz.personalAcademics.ellipsoidCalc.InvalidUserInputException;
+import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
 
 public class EllipsoidSphericalCoords extends Ellipsoid{
 	

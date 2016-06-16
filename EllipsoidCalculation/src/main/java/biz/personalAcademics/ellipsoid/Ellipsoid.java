@@ -2,7 +2,7 @@ package biz.personalAcademics.ellipsoid;
 
 import java.util.Random;
 
-import biz.personalAcademics.ellipsoidCalc.InvalidUserInputException;
+import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
 
 public class Ellipsoid extends EllipsoidalShape {
 

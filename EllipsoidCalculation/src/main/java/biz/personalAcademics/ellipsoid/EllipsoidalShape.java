@@ -2,7 +2,7 @@ package biz.personalAcademics.ellipsoid;
 
 import java.util.Arrays;
 
-import biz.personalAcademics.ellipsoidCalc.InvalidUserInputException;
+import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
 
 public abstract class EllipsoidalShape {
 	protected double startRadianTheta, endRadianTheta, radianMeasureOffZAxisEnd,

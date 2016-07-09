@@ -133,6 +133,10 @@ public class EllipsoidCalcController {
 			ellip = new Ellipsoid(thetaBegin, thetaEnd, phiAngleStart,
 					phiAngleEnd, aAxis, bAxis, cAxis);
 			
+			/*
+			 * Creates a new thread to run calculation. Inner class accepts
+			 * an Ellipsoid object in its constructor
+			 */
 			calculation = new Thread(new ExecuteCalculation(ellip));
 
 		} catch (InvalidUserInputException e) {
@@ -143,22 +147,16 @@ public class EllipsoidCalcController {
 			return;
 		}
 		
-		
+		/*
+		 * Starts the calculation in a new thread. This informs the user
+		 * that the calculation is in progress and then displays the result
+		 */
 		calculation.start();
 
 	
 
 	}
 	
-	public void updateLabelLater(final Label label, final String message) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				label.setGraphic(null);
-				label.setText(message);
-			}
-		});
-	}
 
 	private boolean ensureAllEntriesLogged() {
 		boolean incompleteInput = false;
@@ -240,26 +238,43 @@ public class EllipsoidCalcController {
 			
 			try {
 				if (sampleSizeTextBox.getText().equals("")) {
-					updateLabelLater(warningLabel, "Calculating... Please wait");
-					updateLabelLater(volumeAnswer, ellip.toString());
-					updateLabelLater(warningLabel, "");
+					Platform.runLater(new UpdateLabel(warningLabel, "Calculating... Please wait"));
+					Platform.runLater(new UpdateLabel(volumeAnswer, ellip.toString()));
+					Platform.runLater(new UpdateLabel(warningLabel, ""));
 				} else {
 					String sampleString = sampleSizeTextBox.getText().replaceAll("[,_]", "");
 					int sampleSize = Integer.parseInt(sampleString);
 					
-					updateLabelLater(warningLabel, "Calculating... Please wait");
-					updateLabelLater(volumeAnswer, ellip.toString(sampleSize));
-					updateLabelLater(warningLabel, "");
+					Platform.runLater(new UpdateLabel(warningLabel, "Calculating... Please wait"));
+					Platform.runLater(new UpdateLabel(volumeAnswer, ellip.toString(sampleSize)));
+					Platform.runLater(new UpdateLabel(warningLabel, ""));
 				}
 			} catch (NumberFormatException | InvalidUserInputException e) {
 				DecimalFormat sampleForm = new DecimalFormat("#,###,###");
-				updateLabelLater(warningLabel, String
+				Platform.runLater(new UpdateLabel(warningLabel, String
 						.format("%s is not an acceptable sample size, sample must be at least %s",
-								e.getMessage(), sampleForm.format(Ellipsoid.MIN_SAMPLE_SIZE)));
+								e.getMessage(), sampleForm.format(Ellipsoid.MIN_SAMPLE_SIZE))));
 				return;
 			}
 			
 			
+		}
+		
+	}
+	
+	private class UpdateLabel implements Runnable{
+		
+		private Label label;
+		private String message;
+		
+		public UpdateLabel(Label label, String message) {
+			this.label = label;
+			this.message = message;
+		}
+		
+		@Override
+		public void run() {
+			label.setText(message);
 		}
 		
 	}

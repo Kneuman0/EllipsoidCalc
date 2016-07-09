@@ -1,6 +1,12 @@
 package biz.personalAcademics.ellipsoid;
 
 import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
+import static java.lang.Math.PI;
+import static java.lang.Math.pow;
+import static java.lang.Math.sin;
+import static java.lang.Math.cos;
+import static java.lang.Math.acos;
+import static java.lang.Math.cbrt;
 
 public class EllipsoidSphericalCoords extends Ellipsoid{
 	
@@ -35,8 +41,8 @@ public class EllipsoidSphericalCoords extends Ellipsoid{
 		double portionOfKnownVolume = insideShape / (double) sampleSize;
 
 		// portion of volume of 3D system
-		return portionOfKnownVolume * (4.0 / 3.0) * Math.PI
-				* Math.pow(getLongestAxis(), 3);
+		return portionOfKnownVolume * (4.0 / 3.0) * PI
+				* pow(getLongestAxis(), 3);
 	}
 
 	/**
@@ -65,8 +71,8 @@ public class EllipsoidSphericalCoords extends Ellipsoid{
 		double portionOfKnownVolume = insideShape / (double) sampleSize;
 
 		// portion of volume of 3D system
-		return portionOfKnownVolume * (4.0 / 3.0) * Math.PI
-				* Math.pow(getLongestAxis(), 3);
+		return portionOfKnownVolume * (4.0 / 3.0) * PI
+				* pow(getLongestAxis(), 3);
 	}
 
 	
@@ -126,11 +132,11 @@ public class EllipsoidSphericalCoords extends Ellipsoid{
 	 * @return
 	 */
 	protected boolean pointInsideEquationOfEllipsoidSphere(double[] coord) {
-		double xSquared = Math.pow(
-				(coord[super.p] * Math.sin(coord[super.phi]) * Math.cos(coord[super.theta])), 2);
-		double ySquared = Math.pow(
-				(coord[super.p] * Math.sin(coord[super.phi]) * Math.sin(coord[super.theta])), 2);
-		double zSquared = Math.pow((coord[super.p] * Math.cos(coord[super.phi])), 2);
+		double xSquared = pow(
+				(coord[super.p] * sin(coord[super.phi]) * cos(coord[super.theta])), 2);
+		double ySquared = pow(
+				(coord[super.p] * sin(coord[super.phi]) * sin(coord[super.theta])), 2);
+		double zSquared = pow((coord[super.p] * cos(coord[super.phi])), 2);
 
 		/*
 		 * 
@@ -157,14 +163,14 @@ public class EllipsoidSphericalCoords extends Ellipsoid{
 		double[] samplePoint = new double[3];
 
 		// phi ranges from 0 to pi
-		samplePoint[super.phi] = Math.acos(2 * randomGenerator.nextDouble() - 1);
+		samplePoint[super.phi] = acos(2 * randomGenerator.nextDouble() - 1);
 
 		// theta ranges from 0 to 2pi
-		samplePoint[super.theta] = 2 * Math.PI * randomGenerator.nextDouble();
+		samplePoint[super.theta] = 2 * PI * randomGenerator.nextDouble();
 
 		// p ranges from 0 to the longest axis
 		samplePoint[super.p] = getLongestAxis()
-				* Math.cbrt(randomGenerator.nextDouble());
+				* cbrt(randomGenerator.nextDouble());
 
 		return samplePoint;
 	}

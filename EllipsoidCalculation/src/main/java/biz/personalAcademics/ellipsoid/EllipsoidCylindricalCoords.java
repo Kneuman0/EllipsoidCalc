@@ -1,6 +1,12 @@
 package biz.personalAcademics.ellipsoid;
 
 import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
+import static java.lang.Math.PI;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.sin;
+import static java.lang.Math.cos;
+
 
 public class EllipsoidCylindricalCoords extends Ellipsoid{
 
@@ -43,7 +49,7 @@ public class EllipsoidCylindricalCoords extends Ellipsoid{
 		double portionOfKnownVolume = insideShape / (double) sampleSize;
 
 		// portion of volume of 3D system V = (pi)(h)(r^2)
-		return portionOfKnownVolume * Math.PI * Math.pow(this.getA(), 2) * 2
+		return portionOfKnownVolume * PI * pow(this.getA(), 2) * 2
 				* this.getC();
 	}
 
@@ -80,7 +86,7 @@ public class EllipsoidCylindricalCoords extends Ellipsoid{
 		double portionOfKnownVolume = insideShape / (double) sampleSize;
 
 		// portion of volume of 3D system V = (pi)(h)(r^2)
-		return portionOfKnownVolume * Math.PI * Math.pow(this.getA(), 2) * 2
+		return portionOfKnownVolume * PI * pow(this.getA(), 2) * 2
 				* this.getC();
 	}
 	
@@ -111,9 +117,9 @@ public class EllipsoidCylindricalCoords extends Ellipsoid{
 		double numerator = this.getA() * this.getB();
 
 		// ( b^2 cos^2(theta) + a^2 sin^2(theta) )^(1/2)
-		double denominator = Math.sqrt(Math.pow(
-				this.getB() * Math.cos(coord[this.theta]), 2)
-				+ Math.pow(this.a * Math.sin(coord[theta]), 2));
+		double denominator = sqrt(pow(
+				this.getB() * cos(coord[theta]), 2)
+				+ pow(a * sin(coord[theta]), 2));
 		double rValue = numerator / denominator;
 
 		return coord[r] <= rValue;
@@ -130,11 +136,11 @@ public class EllipsoidCylindricalCoords extends Ellipsoid{
 	 * @return
 	 */
 	private boolean pointInsideEquationOfEllipsoidCyl(double[] coord) {
-		double xValue = Math.pow((coord[r] * Math.cos(coord[theta])) / this.a,
+		double xValue = pow((coord[r] * cos(coord[theta])) / a,
 				2);
-		double yValue = Math.pow((coord[r] * Math.sin(coord[theta])) / this.b,
+		double yValue = pow((coord[r] * sin(coord[theta])) / b,
 				2);
-		double zValue = Math.pow(coord[z] / this.c, 2);
+		double zValue = pow(coord[z] / c, 2);
 
 		double pointValue = xValue + yValue + zValue;
 
@@ -155,7 +161,7 @@ public class EllipsoidCylindricalCoords extends Ellipsoid{
 	}
 
 	private double cot(double theta) {
-		return (Math.cos(theta) / Math.sin(theta));
+		return (cos(theta) / sin(theta));
 	}
 
 	/**
@@ -170,7 +176,7 @@ public class EllipsoidCylindricalCoords extends Ellipsoid{
 	 * @return
 	 */
 	private boolean checkThatZMoreThanPhiLineEnd(double[] coord) {
-		if (radianMeasureOffZAxisEnd == Math.PI) {
+		if (radianMeasureOffZAxisEnd == PI) {
 
 			return true;
 		} else {
@@ -205,8 +211,8 @@ public class EllipsoidCylindricalCoords extends Ellipsoid{
 			return true;
 		} else {
 
-			double phiValue = (Math.cos(radianMeasureOffZAxisStart) / Math
-					.sin(radianMeasureOffZAxisStart)) * coord[r];
+			double phiValue = (cos(radianMeasureOffZAxisStart) / 
+					sin(radianMeasureOffZAxisStart)) * coord[r];
 
 			if (coord[z] <= phiValue) {
 
@@ -250,10 +256,10 @@ public class EllipsoidCylindricalCoords extends Ellipsoid{
 		double[] samplePoint = new double[3];
 
 		// r will range from 0 to the longest axis
-		samplePoint[r] = this.a * Math.sqrt(randomGenerator.nextDouble());
+		samplePoint[r] = this.a * sqrt(randomGenerator.nextDouble());
 
 		// theta will range 0 to 2pi
-		samplePoint[theta] = 2 * Math.PI * randomGenerator.nextDouble();
+		samplePoint[theta] = 2 * PI * randomGenerator.nextDouble();
 
 		// z will range from 0 to the c axis both above and below the xy plane
 		samplePoint[z] = this.c * randomGenerator.nextDouble()

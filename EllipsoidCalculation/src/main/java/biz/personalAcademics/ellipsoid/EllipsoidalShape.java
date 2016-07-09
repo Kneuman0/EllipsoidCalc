@@ -1,6 +1,7 @@
 package biz.personalAcademics.ellipsoid;
 
 import java.util.Arrays;
+import static java.lang.Math.PI;
 
 import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
 
@@ -24,12 +25,8 @@ public abstract class EllipsoidalShape {
 		this.a = a;
 		this.b = b;
 		this.c = c;
-
-		sortedAxes = new double[] { a, b, c };
-		Arrays.sort(sortedAxes);
 		
 		updateFields();
-
 	}
 	
 	/**
@@ -37,13 +34,16 @@ public abstract class EllipsoidalShape {
 	 * execution pattern for volume calculation
 	 */
 	private void updateFields() {
+		sortedAxes = new double[] { this.a, this.b, this.c };
+		Arrays.sort(sortedAxes);
+		
 		this.eccentricity = (this.c / this.a) + (this.b / this.a);
 		
 		this.radianSum = this.radianMeasureOffZAxisEnd
 				+ this.radianMeasureOffZAxisStart + this.startRadianTheta
 				+ this.endRadianTheta;
 
-		this.executeDefiniteIntegral = this.radianSum % (Math.PI / 2) == 0
+		this.executeDefiniteIntegral = this.radianSum % (PI / 2) == 0
 				|| this.eccentricity == 2;
 	}
 	
@@ -217,8 +217,20 @@ public abstract class EllipsoidalShape {
 
 	}
 
+	/**
+	 * Returns the longest axis
+	 * @return
+	 */
 	protected double getLongestAxis() {
 		return sortedAxes[2];
+	}
+	
+	/**
+	 * Returns an array of the given sorted axes smallest to largest
+	 * @return
+	 */
+	public double[] getSortedAxes(){
+		return sortedAxes;
 	}
 
 	/**

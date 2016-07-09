@@ -1,7 +1,10 @@
 package biz.personalAcademics.ellipsoidCalc;
 
+import java.text.DecimalFormat;
+
 import biz.personalAcademics.ellipsoid.Ellipsoid;
 import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -91,6 +94,7 @@ public class EllipsoidCalcController {
 
 	public void calculateButton() {
 		warningLabel.setText("");
+		volumeAnswer.setText("");
 		if (ensureAllEntriesLogged()) {
 			return;
 		}
@@ -114,6 +118,7 @@ public class EllipsoidCalcController {
 		}
 
 		Ellipsoid ellip = null;
+		Thread calculation = null;
 
 		try {
 			double thetaBegin = Ellipsoid.convertThetaToRadians(startAngle,
@@ -127,6 +132,8 @@ public class EllipsoidCalcController {
 
 			ellip = new Ellipsoid(thetaBegin, thetaEnd, phiAngleStart,
 					phiAngleEnd, aAxis, bAxis, cAxis);
+			
+			calculation = new Thread(new ExecuteCalculation(ellip));
 
 		} catch (InvalidUserInputException e) {
 			warningLabel.setText(String.format("Non number '%s' Detected",
@@ -135,34 +142,22 @@ public class EllipsoidCalcController {
 			// terminate is invalid user input is detected
 			return;
 		}
+		
+		
+		calculation.start();
 
-		// Task task = new Task<Void>() {
-		// @Override public Void call() {
-		// volumeAnswer.setText("Estimating: Please wait...");
-		// return null;
-		// }
-		// };
-		//
-		// Thread thread = new Thread(task);
-		// thread.start();
+	
 
-		try {
-			if (sampleSizeTextBox.getText().equals("")) {
-				volumeAnswer.setText(ellip.toString());
-			} else {
-				int sampleSize = Integer.parseInt(sampleSizeTextBox.getText()
-						.replace(",", ""));
-
-				volumeAnswer.setText(ellip.toString(sampleSize));
+	}
+	
+	public void updateLabelLater(final Label label, final String message) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				label.setGraphic(null);
+				label.setText(message);
 			}
-		} catch (NumberFormatException | InvalidUserInputException e) {
-			warningLabel
-					.setText(String
-							.format("%s is not an acceptable sample size, sample must be at least %d",
-									e.getMessage(), Ellipsoid.MIN_SAMPLE_SIZE));
-			return;
-		}
-
+		});
 	}
 
 	private boolean ensureAllEntriesLogged() {
@@ -230,6 +225,43 @@ public class EllipsoidCalcController {
 		alert.setContentText(String.format("%s\n\n%s",
 				sphericalCoordinatesWarning, axisWarning));
 		alert.showAndWait();
+	}
+	
+	private class ExecuteCalculation implements Runnable{
+		
+		private Ellipsoid ellip;
+		
+		public ExecuteCalculation(Ellipsoid ellip) {
+			this.ellip = ellip;
+		}
+		
+		@Override
+		public void run() {
+			
+			try {
+				if (sampleSizeTextBox.getText().equals("")) {
+					updateLabelLater(warningLabel, "Calculating... Please wait");
+					updateLabelLater(volumeAnswer, ellip.toString());
+					updateLabelLater(warningLabel, "");
+				} else {
+					String sampleString = sampleSizeTextBox.getText().replaceAll("[,_]", "");
+					int sampleSize = Integer.parseInt(sampleString);
+					
+					updateLabelLater(warningLabel, "Calculating... Please wait");
+					updateLabelLater(volumeAnswer, ellip.toString(sampleSize));
+					updateLabelLater(warningLabel, "");
+				}
+			} catch (NumberFormatException | InvalidUserInputException e) {
+				DecimalFormat sampleForm = new DecimalFormat("#,###,###");
+				updateLabelLater(warningLabel, String
+						.format("%s is not an acceptable sample size, sample must be at least %s",
+								e.getMessage(), sampleForm.format(Ellipsoid.MIN_SAMPLE_SIZE)));
+				return;
+			}
+			
+			
+		}
+		
 	}
 
 }

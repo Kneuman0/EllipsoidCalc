@@ -1,6 +1,10 @@
 package biz.personalAcademics.ellipsoid;
 
 import biz.personalAcademics.ellipsoid.customExceptions.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.acos;
+import static java.lang.Math.atan;
 
 public class EllipsoidRectangularCoords extends Ellipsoid{
 	
@@ -184,16 +188,16 @@ public class EllipsoidRectangularCoords extends Ellipsoid{
 		if (coord[z] > 0 && coord[x] != 0 && coord[y] != 0) {
 
 			// arcCos(z/sqrt(x^2 + y^2 + z^2))
-			return Math.acos(coord[z]
-					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+			return acos(coord[z]
+					/ (sqrt(coord[x] * coord[x] + coord[y] * coord[y]
 							+ coord[z] * coord[z])));
 
 			// below xy plane (negative z value)
 		} else if (coord[z] < 0 && coord[x] != 0 && coord[y] != 0) {
 
 			// arcCos(z/sqrt(x^2 + y^2 + z^2)) + pi
-			return Math.acos(coord[z]
-					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+			return acos(coord[z]
+					/ (sqrt(coord[x] * coord[x] + coord[y] * coord[y]
 							+ coord[z] * coord[z])))
 			// + Math.PI
 			;
@@ -204,41 +208,41 @@ public class EllipsoidRectangularCoords extends Ellipsoid{
 
 			// on negative z axis = pi
 		} else if (coord[z] < 0 && coord[x] == 0 && coord[y] == 0) {
-			return Math.PI;
+			return PI;
 
 			// in zy plane above xy plane
 		} else if (coord[z] > 0 && coord[x] == 0 && coord[y] != 0) {
 
-			return Math.acos(coord[z]
-					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+			return acos(coord[z]
+					/ (sqrt(coord[x] * coord[x] + coord[y] * coord[y]
 							+ coord[z] * coord[z])));
 
 			// in zy plane below xy plane
 		} else if (coord[z] < 0 && coord[x] == 0 && coord[y] != 0) {
 
-			return Math.acos(coord[z]
-					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+			return acos(coord[z]
+					/ (sqrt(coord[x] * coord[x] + coord[y] * coord[y]
 							+ coord[z] * coord[z])));
 
 			// in zx plane above xy plane
 		} else if (coord[z] > 0 && coord[x] != 0 && coord[y] == 0) {
 
-			return Math.acos(coord[z]
-					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+			return acos(coord[z]
+					/ (sqrt(coord[x] * coord[x] + coord[y] * coord[y]
 							+ coord[z] * coord[z])));
 
 			// in zx plane below xy plane
 		} else if (coord[z] < 0 && coord[x] != 0 && coord[y] == 0) {
 
-			return Math.acos(coord[z]
-					/ (Math.sqrt(coord[x] * coord[x] + coord[y] * coord[y]
+			return acos(coord[z]
+					/ (sqrt(coord[x] * coord[x] + coord[y] * coord[y]
 							+ coord[z] * coord[z])));
 
 			// in xy plane
 		} else if (coord[z] == 0) {
 
 			if (coord[x] != 0 || coord[y] != 0) {
-				return Math.PI / 2;
+				return PI / 2;
 
 			} else {
 
@@ -279,27 +283,27 @@ public class EllipsoidRectangularCoords extends Ellipsoid{
 			PointOnOriginException {
 		// first quadrant
 		if (coord[x] > 0 && coord[y] > 0) {
-			return Math.atan(coord[y] / coord[x]);
+			return atan(coord[y] / coord[x]);
 
 			// Second quadrant
 		} else if (coord[x] < 0 && coord[y] > 0) {
-			return Math.atan(coord[y] / coord[x]) + Math.PI;
+			return atan(coord[y] / coord[x]) + PI;
 
 			// Third Quadrant
 		} else if (coord[x] < 0 && coord[y] < 0) {
-			return Math.atan(coord[y] / coord[x]) + Math.PI;
+			return atan(coord[y] / coord[x]) + PI;
 
 			// Fourth Quadrant
 		} else if (coord[x] > 0 && coord[y] < 0) {
-			return Math.atan(coord[y] / coord[x]) + 2 * Math.PI;
+			return atan(coord[y] / coord[x]) + 2 * PI;
 
 			// on positive y axis
 		} else if (coord[x] == 0 && coord[y] > 0) {
-			return Math.PI / 2;
+			return PI / 2;
 
 			// on negative y axis
 		} else if (coord[x] == 0 && coord[y] < 0) {
-			return (3 / 2) * Math.PI;
+			return (3 / 2) * PI;
 
 			// on positive x axis (choosing 0 for radian measure because this is
 			// the start value)
@@ -308,7 +312,7 @@ public class EllipsoidRectangularCoords extends Ellipsoid{
 
 			// on negative x axis
 		} else if (coord[x] < 0 && coord[y] == 0) {
-			return Math.PI;
+			return PI;
 
 			// on negative z axis
 		} else if (coord[x] == 0 && coord[y] == 0 && coord[z] < 0) {
@@ -346,36 +350,36 @@ public class EllipsoidRectangularCoords extends Ellipsoid{
 			PointOnOriginException {
 		// first quadrant
 		if (coord[x] > 0 && coord[y] > 0) {
-			return Math.atan(coord[y] / coord[x]);
+			return atan(coord[y] / coord[x]);
 
 			// Second quadrant
 		} else if (coord[x] < 0 && coord[y] > 0) {
-			return Math.atan(coord[y] / coord[x]) + Math.PI;
+			return atan(coord[y] / coord[x]) + PI;
 
 			// Third Quadrant
 		} else if (coord[x] < 0 && coord[y] < 0) {
-			return Math.atan(coord[y] / coord[x]) + Math.PI;
+			return atan(coord[y] / coord[x]) + PI;
 
 			// Fourth Quadrant
 		} else if (coord[x] > 0 && coord[y] < 0) {
-			return Math.atan(coord[y] / coord[x]) + 2 * Math.PI;
+			return atan(coord[y] / coord[x]) + 2 * PI;
 
 			// on positive y axis
 		} else if (coord[x] == 0 && coord[y] > 0) {
-			return Math.PI / 2;
+			return PI / 2;
 
 			// on negative y axis
 		} else if (coord[x] == 0 && coord[y] < 0) {
-			return (3 / 2) * Math.PI;
+			return (3 / 2) * PI;
 
 			// on positive x axis (choosing 0 for radian measure because this is
 			// the start value)
 		} else if (coord[x] > 0 && coord[y] == 0) {
-			return 2 * Math.PI;
+			return 2 * PI;
 
 			// on negative x axis
 		} else if (coord[x] < 0 && coord[y] == 0) {
-			return Math.PI;
+			return PI;
 
 			// on negative z axis
 		} else if (coord[x] < 0 && coord[y] == 0 && coord[z] < 0) {

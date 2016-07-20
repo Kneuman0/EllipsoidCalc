@@ -1,4 +1,4 @@
-﻿EllipsoidCalc
+﻿# EllipsoidCalc
 
 README
 
@@ -15,7 +15,7 @@ If you'd like to review the math, navigate to the Documentation and Notes on Mat
 
 
 
-Further reading
+# Further reading
 
-	1) Hand Written Formula and Process Volume Calc (legacy document)
+	1. Hand Written Formula and Process Volume Calc (legacy document)
 

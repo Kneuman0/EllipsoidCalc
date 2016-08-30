@@ -6,7 +6,7 @@ import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputExceptio
 
 public class Ellipsoid extends EllipsoidalShape {
 
-	public static final int MIN_SAMPLE_SIZE = 5_000_000;
+	public static final int MIN_SAMPLE_SIZE = 10_000_000;
 	
 	// rectangular and cylindrical coordinate indexes
 	protected final int x = 0, y = 1, z = 2;
@@ -16,6 +16,8 @@ public class Ellipsoid extends EllipsoidalShape {
 	protected final int p = 2;
 	// cylindrical coordinate indexes
 	protected final int r = 0;
+	
+	protected int sampleSize;
 	
 
 	protected Random randomGenerator;
@@ -28,7 +30,7 @@ public class Ellipsoid extends EllipsoidalShape {
 				radianMeasureOffZAxisEnd, a, b, c);
 
 		randomGenerator = new Random();
-		
+		this.sampleSize = Ellipsoid.MIN_SAMPLE_SIZE;
 	}
 
 	/**
@@ -41,7 +43,7 @@ public class Ellipsoid extends EllipsoidalShape {
 	 *
 	 * @return
 	 */
-	private double getExactVolume() {
+	protected double getExactVolume() {
 
 		double oneThird = 1.0 / 3.0;
 		double volume = (-oneThird)
@@ -77,7 +79,9 @@ public class Ellipsoid extends EllipsoidalShape {
 		} else {
 
 			if (this.eccentricity >= 1) {
-
+				
+				this.sampleSize = sampleSize;
+				
 				return new EllipsoidSphericalCoords(startRadianTheta,
 						endRadianTheta, radianMeasureOffZAxisStart,
 						radianMeasureOffZAxisEnd, a, b, c)
@@ -85,6 +89,8 @@ public class Ellipsoid extends EllipsoidalShape {
 
 			} else {
 
+				this.sampleSize = sampleSize;
+				
 				return new EllipsoidRectangularCoords(startRadianTheta,
 						endRadianTheta, radianMeasureOffZAxisStart,
 						radianMeasureOffZAxisEnd, a, b, c)
@@ -126,6 +132,10 @@ public class Ellipsoid extends EllipsoidalShape {
 		}
 
 	}
+	
+	public double getError(){
+		return .0008;
+	}
 
 	/**
 	 * This method will return the estimated volume of the shape through random
@@ -134,13 +144,12 @@ public class Ellipsoid extends EllipsoidalShape {
 	public String toString() {
 		double volume = this.getEstimatedVolume();
 		String error;
+		double volumeError = getError() * volume;
 
-		if (sortedAxes[0] > 10 && !this.executeDefiniteIntegral) {
-			error = String.format("%.0f", volume * .0001);
-		} else if (sortedAxes[0] < 10 && !this.executeDefiniteIntegral) {
-			error = String.format("%.2f", volume * .01);
-		} else {
+		if(this.executeDefiniteIntegral){
 			error = "0.0  *Definte integral used*";
+		}else{			
+			error = String.format("%.2f", volumeError);
 		}
 
 		return String.format("%.2f +/- %s", volume, error);
@@ -153,13 +162,13 @@ public class Ellipsoid extends EllipsoidalShape {
 	public String toString(int sampleSize) {
 		double volume = this.getEstimatedVolume(sampleSize);
 		String error;
+		double volumeError = getError() * volume;
 
-		if (sortedAxes[0] > 10 && !this.executeDefiniteIntegral) {
-			error = String.format("%.0f", volume * .0001);
-		} else if (sortedAxes[0] < 10 && !this.executeDefiniteIntegral) {
-			error = String.format("%.2f", volume * .01);
-		} else {
+		
+		if(this.executeDefiniteIntegral){
 			error = "0.0  *Definte integral used*";
+		}else{			
+			error = String.format("%.2f", volumeError);
 		}
 
 		return String.format("%.2f +/- %s", volume, error);
@@ -178,5 +187,9 @@ public class Ellipsoid extends EllipsoidalShape {
 		} else {
 			return -1;
 		}
+	}
+	
+	protected int getSampleSize(){
+		return sampleSize;
 	}
 }

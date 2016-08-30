@@ -8,6 +8,7 @@ import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputExceptio
 public abstract class EllipsoidalShape {
 	protected double startRadianTheta, endRadianTheta, radianMeasureOffZAxisEnd,
 			radianMeasureOffZAxisStart, a, b, c;
+	
 	protected boolean executeDefiniteIntegral;
 
 	protected double[] sortedAxes;

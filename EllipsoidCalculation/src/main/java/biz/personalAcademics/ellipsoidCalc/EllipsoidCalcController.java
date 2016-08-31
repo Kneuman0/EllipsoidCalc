@@ -24,46 +24,31 @@ import javafx.scene.layout.BackgroundSize;
 public class EllipsoidCalcController {
 
 	@FXML
-	private TextField phiStart;
+	private TextField 
+			sampleSizeTextBox,
+			phiStart,
+			phiEnd,
+			thetaStart,
+			thetaEnd,
+			a,
+			b,
+			c;
+
+	@FXML
+	private Label 
+			warningLabel,
+			volumeAnswer;
+
+	@FXML
+	private RadioButton 
+			radiansRadio,
+			degreesRadio;
 
 	@FXML
 	private ImageView diagramImage;
 
 	@FXML
-	private TextField sampleSizeTextBox;
-
-	@FXML
-	private TextField phiEnd;
-
-	@FXML
-	private TextField a;
-
-	@FXML
-	private TextField b;
-
-	@FXML
-	private TextField c;
-
-	@FXML
-	private TextField thetaEnd;
-
-	@FXML
-	private Label warningLabel;
-
-	@FXML
 	private ToggleGroup angle;
-
-	@FXML
-	private RadioButton radiansRadio;
-
-	@FXML
-	private Label volumeAnswer;
-
-	@FXML
-	private RadioButton degreesRadio;
-
-	@FXML
-	private TextField thetaStart;
 
 	@FXML
 	private AnchorPane anchorPane;

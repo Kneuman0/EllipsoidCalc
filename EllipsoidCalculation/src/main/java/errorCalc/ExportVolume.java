@@ -39,17 +39,19 @@ public class ExportVolume {
 			MonteCarloEllip ellip =  new MonteCarloEllip(0, 2*PI, 0, PI,
 					sortedAxes[2], b, c);
 			
-			double volumeEst = ellip.getEstimatedVolume();
+			int sampleSize = 
+//					rand.nextInt(50_000_000) + 1_000
+					10_000_000;
+			double volumeEst = ellip.getEstimatedVolume(sampleSize);
 			System.out.println(i + "\n" + "Estimated: " + volumeEst);
-			double volumeReal = ellip.getEstimatedVolume(10000000);
+			double volumeReal = ellip.getEstimatedVolume();
 			System.out.println("Actual: " + volumeReal);
-			System.out.println("Random: " + n);
+			System.out.println("Random: " + sampleSize);
 			System.out.println("-----------------");
 			double error = Math.abs(volumeEst - volumeReal);
 			double errorUnit = error/volumeEst;
 			
 			double lowestEccentricity = 0;	
-			double[] sortedAxis = ellip.getSortedAxes();
 			double cOverA = ellip.getC()/ellip.getA();
 			double bOverA = ellip.getB()/ellip.getA();
 			
@@ -59,7 +61,7 @@ public class ExportVolume {
 				lowestEccentricity = bOverA;
 			}
 			
-			fileOut.printf("%f,%f,%f\n", errorUnit, lowestEccentricity, ellip.getTotalEccentricity());
+			fileOut.printf("%f,%d\n", errorUnit, sampleSize);
 						
 		}
 		
@@ -82,32 +84,42 @@ public class ExportVolume {
 				radianMeasureOffZAxisEnd, a, b, c);
 		}
 		
-		public double getEstimatedVolume()
-				throws InvalidUserInputException {
-			if (sampleSize < Ellipsoid.MIN_SAMPLE_SIZE) {
-				throw new InvalidUserInputException(
-						new Integer(sampleSize).toString());
-			}
-
+		public double getEstimatedVolume(int sampleSize){
 
 				if (this.eccentricity >= 1) {
-										
-					return new EllipsoidSphericalCoords(startRadianTheta,
-							endRadianTheta, radianMeasureOffZAxisStart,
-							radianMeasureOffZAxisEnd, a, b, c)
-							.getEstimatedVolume(sampleSize);
+					
+					this.sampleSize = sampleSize;
+					
+					// average 5 integrations
+					double averageVolume = 0;
+					for(int i = 0; i < 5; i++){
+						averageVolume += new EllipsoidSphericalCoords(startRadianTheta,
+								endRadianTheta, radianMeasureOffZAxisStart,
+								radianMeasureOffZAxisEnd, a, b, c)
+								.getEstimatedVolume(sampleSize);
+					}
+					
+					averageVolume /= 5.0;
+					
+					return averageVolume;
 
 				} else {
+
+					this.sampleSize = sampleSize;
 					
-					return new EllipsoidRectangularCoords(startRadianTheta,
-							endRadianTheta, radianMeasureOffZAxisStart,
-							radianMeasureOffZAxisEnd, a, b, c)
-							.getEstimatedVolume(sampleSize);
-
+					double averageVolume = 0;
+					for(int i = 0; i < 5; i++){
+						averageVolume += new EllipsoidRectangularCoords(startRadianTheta,
+								endRadianTheta, radianMeasureOffZAxisStart,
+								radianMeasureOffZAxisEnd, a, b, c)
+								.getEstimatedVolume(sampleSize);
+					}
+					
+					averageVolume /= 5.0;
+					
+					return averageVolume;
 				}
-
-			
 		}
-	}
 
+	}
 }

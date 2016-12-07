@@ -13,7 +13,6 @@ public class EllipsoidCalcMain extends Application{
 		Parent parent = null;
 		try {
 			parent = FXMLLoader.load(getClass().getResource("/resources/EllipsoidVolumeGUI.fxml"));
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

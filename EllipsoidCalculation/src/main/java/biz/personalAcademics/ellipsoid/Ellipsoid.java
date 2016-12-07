@@ -82,19 +82,34 @@ public class Ellipsoid extends EllipsoidalShape {
 				
 				this.sampleSize = sampleSize;
 				
-				return new EllipsoidSphericalCoords(startRadianTheta,
-						endRadianTheta, radianMeasureOffZAxisStart,
-						radianMeasureOffZAxisEnd, a, b, c)
-						.getEstimatedVolume(sampleSize);
+				// average 5 integrations
+				double averageVolume = 0;
+				for(int i = 0; i < 5; i++){
+					averageVolume += new EllipsoidSphericalCoords(startRadianTheta,
+							endRadianTheta, radianMeasureOffZAxisStart,
+							radianMeasureOffZAxisEnd, a, b, c)
+							.getEstimatedVolume(sampleSize);
+				}
+				
+				averageVolume /= 5.0;
+				
+				return averageVolume;
 
 			} else {
 
 				this.sampleSize = sampleSize;
 				
-				return new EllipsoidRectangularCoords(startRadianTheta,
-						endRadianTheta, radianMeasureOffZAxisStart,
-						radianMeasureOffZAxisEnd, a, b, c)
-						.getEstimatedVolume(sampleSize);
+				double averageVolume = 0;
+				for(int i = 0; i < 5; i++){
+					averageVolume += new EllipsoidRectangularCoords(startRadianTheta,
+							endRadianTheta, radianMeasureOffZAxisStart,
+							radianMeasureOffZAxisEnd, a, b, c)
+							.getEstimatedVolume(sampleSize);
+				}
+				
+				averageVolume /= 5.0;
+				
+				return averageVolume;
 
 			}
 
@@ -107,8 +122,13 @@ public class Ellipsoid extends EllipsoidalShape {
 	 * 
 	 * @return
 	 */
-	public double getEstimatedVolume() {
-
+	public double getEstimatedVolume() 
+		throws InvalidUserInputException {
+			if (sampleSize < Ellipsoid.MIN_SAMPLE_SIZE) {
+				throw new InvalidUserInputException(
+						new Integer(sampleSize).toString());
+			}
+			
 		if (this.executeDefiniteIntegral) {
 
 			return getExactVolume();
@@ -117,15 +137,31 @@ public class Ellipsoid extends EllipsoidalShape {
 
 			if (eccentricity >= 1) {
 
-				return new EllipsoidSphericalCoords(startRadianTheta,
-						endRadianTheta, radianMeasureOffZAxisStart,
-						radianMeasureOffZAxisEnd, a, b, c).getEstimatedVolume();
+				double averageVolume = 0;
+				for(int i = 0; i < 5; i++){
+					averageVolume += new EllipsoidSphericalCoords(startRadianTheta,
+							endRadianTheta, radianMeasureOffZAxisStart,
+							radianMeasureOffZAxisEnd, a, b, c)
+							.getEstimatedVolume(sampleSize);
+				}
+				
+				averageVolume /= 5.0;
+				
+				return averageVolume;
 
 			} else {
 
-				return new EllipsoidRectangularCoords(startRadianTheta,
-						endRadianTheta, radianMeasureOffZAxisStart,
-						radianMeasureOffZAxisEnd, a, b, c).getEstimatedVolume();
+				double averageVolume = 0;
+				for(int i = 0; i < 5; i++){
+					averageVolume += new EllipsoidRectangularCoords(startRadianTheta,
+							endRadianTheta, radianMeasureOffZAxisStart,
+							radianMeasureOffZAxisEnd, a, b, c)
+							.getEstimatedVolume(sampleSize);
+				}
+				
+				averageVolume /= 5.0;
+				
+				return averageVolume;
 
 			}
 
@@ -134,7 +170,7 @@ public class Ellipsoid extends EllipsoidalShape {
 	}
 	
 	public double getError(){
-		return .0008;
+		return 1/Math.sqrt((double)sampleSize);
 	}
 
 	/**

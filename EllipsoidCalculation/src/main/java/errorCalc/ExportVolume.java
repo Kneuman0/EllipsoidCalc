@@ -10,7 +10,6 @@ import static java.lang.Math.PI;
 import biz.personalAcademics.ellipsoid.Ellipsoid;
 import biz.personalAcademics.ellipsoid.EllipsoidRectangularCoords;
 import biz.personalAcademics.ellipsoid.EllipsoidSphericalCoords;
-import biz.personalAcademics.ellipsoid.customExceptions.InvalidUserInputException;
 import biz.personalAcademics.ellipsoidCalc.EllipsoidCalcController;
 import biz.personalAcademics.lib.pathClasses.PathGetter;
 
@@ -61,7 +60,8 @@ public class ExportVolume {
 				lowestEccentricity = bOverA;
 			}
 			
-			fileOut.printf("%f,%d\n", errorUnit, sampleSize);
+			fileOut.printf("errorUnit:,%f,SampleSize:,%d,lowestEccentricityTrace:,%.f \n",
+					errorUnit, sampleSize, lowestEccentricity);
 						
 		}
 		
